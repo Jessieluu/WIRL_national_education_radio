@@ -1,0 +1,1 @@
+apt-get install nginx mariadb-server-10.0 python3 python3-dev python3-pip upstart

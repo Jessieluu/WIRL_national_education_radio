@@ -1,0 +1,38 @@
+{% extends "layout/admin.html" %}
+{% block title %}作答統計{% endblock %}
+{% block cms_title %}作答統計{% endblock %}
+{% block content %}
+	<table id="example1" class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th width="80%">題目</th>
+				<th>答對題數</th>
+				<th>答錯題數</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for question in questions %}
+			<tr>
+				<td>{{question.content}}</td>
+				<td>{{question.correct}}</td>
+				<td>{{question.wrong}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<th width="80%">題目</th>
+				<th>答對題數</th>
+				<th>答錯題數</th>
+			</tr>
+		</tfoot>
+	</table>
+{% endblock %}
+{% block after_body %}
+  {{ super() }}
+<script>
+  $(function () {
+    $("#example1").DataTable();
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{
+	"audio": "/static/upload/創設市集-柯老師.wav",
+	"title": "創設市集-柯老師",
+	"logo": "/static/images/covers/2.jpg",
+	"depiction": "鎖定設計相關時事、國際設計趨勢、台灣設計新秀或是設計美學培養等議題，邀請相關的專家來賓進行訪談；甚至將大眾關心的議題提出，進行討論。",
+	"forward":"/rrrrr/3",
+	"backward":"/rrrrr/1",
+	"questions":[
+		{
+			"id":1, 
+			"content":"玩樂應被視為？", 
+			"type":"single",
+			"start":0,
+			"end":30,
+			"answer":[2],
+			"options":[
+				{"id":1, "label":"消彌時光的工具"}, 
+				{"id":2, "label":"滋養創意的成分"}, 
+				{"id":3, "label":"幼稚的嗜好"},
+				{"id":4, "label":"沒進取心的行為"}]
+		},
+		{
+			"id":2, 
+			"content":"玩樂的功用為？", 
+			"type":"single",
+			"start":269,
+			"end":279,
+			"answer":[8],
+			"options":[
+				{"id":5, "label":"創意的成分"}, 
+				{"id":6, "label":"避開壓力與不自在"},
+				{"id":7, "label":"產生想像力"},
+				{"id":8, "label":"以上皆是"}]
+		},
+		{
+			"id":3, 
+			"content":"設計如何取捨？", 
+			"type":"single",
+			"start":1225,
+			"end":1235,
+			"answer":[9],
+			"options":[
+				{"id":9, "label":"美感及便利性中找出平衡"}, 
+				{"id":10, "label":"只充滿美感"}, 
+				{"id":11, "label":"方便使用者使用但毫無美感"},
+				{"id":12, "label":"只注重功能性"}]
+		},
+		{
+			"id":4, 
+			"content":"如何把玩樂當作創意工具來使用？", 
+			"type":"single",
+			"start":489,
+			"end":499,
+			"answer":[15],
+			"options":[
+				{"id":13, "label":"如何把玩樂當作創意工具來使用？"}, 
+				{"id":14, "label":"只靠想像而不從生活中找出靈感"},
+				{"id":15, "label":"產生想像力"},
+				{"id":16, "label":"毫無節制地玩"}]
+		}
+	]
+}

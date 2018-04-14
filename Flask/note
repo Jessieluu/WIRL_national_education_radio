@@ -1,0 +1,30 @@
+2017/1/24
+	初始 Flask, Login, 完成廣播節目 CMS
+	幾個實作的點
+		1. channel_form.html
+			a. cms 統一使用一個 form 透過 jinja 去修改不同的內文
+			b. behavior 代表目前的狀態方便改標題
+			c. readonly 時使用 jinja + JS readonly, 參考 channel_form.html
+		2. login 頁面直接用原本的適合嗎 ?
+		3. 註解加入?
+		4. 原本資料庫名 Class 容易衝到保留字改成 Category
+
+2017/2/20
+	完成前後台整合
+	Issue
+		1. 抓 channel_memo 當顯示的 description 適合嗎
+		2. 跳頁的問題透過先暫停貌似可以改善
+		3. 點擊音訊串流問題目前無解
+
+
+2017/3/9
+	完成前台註冊與登入
+	作答紀錄：前台丟資料給後台
+
+	TODO
+		Login Form 的 name to account ?!
+		後台處理作答資料以及統計 (資料表在此資料夾圖片中)
+		record_answer 存個人作答的結果
+		audio_statistics 存大家作答的狀況
+		
+		

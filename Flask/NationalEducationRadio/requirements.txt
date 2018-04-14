@@ -1,0 +1,10 @@
+Flask==0.10.1
+Flask-SQLAlchemy==2.1
+PyMySQL==0.7.1
+Flask-Login==0.3.2
+Flask-WTF==0.12
+uWSGI==2.0.14
+requests==2.18.4
+pysolr==3.6.0
+hanziconv==0.3.2
+jieba==0.39

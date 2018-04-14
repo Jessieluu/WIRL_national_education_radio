@@ -1,0 +1,86 @@
+{% extends "layout/front.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{super()}}
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='slick/slick.css')}}"/>
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='slick/slick-theme.css')}}"/>
+  <script type="text/javascript" src="{{url_for('static', filename='slick/slick.js')}}"></script>
+{% endblock %}
+{% block body_css %}
+record-page
+{% endblock %}
+{% block body %}
+  <section class="section1">
+    <div class="page-title">作答紀錄</div>
+    <ul class="series">
+      {% for session in session1 %}
+      <li>
+        <a href="#series1" class="series-content">
+          <div class="series-img"></div>
+          <div class="series-intro">
+            <div class="series-name">{{session.name}}</div>
+            <div class="series-number">
+              共作答 <span>{{session.count}}</span> 次
+            </div>
+          </div>
+        </a>  
+      </li>
+      {% endfor %}
+    </div>
+
+  </section>
+
+  <section class="section2">
+    <div class="board">
+    <div class="tab">所有節目</div>
+    <div class="slider-nav">
+      {% for s1 in session1 %}
+      <div id="series1" class="episodes">
+        <ul>
+          {% for s2 in session2 %}
+          {% if s2[0].audio.audio_channel == s1.channel_id %}
+          <li>
+            <span class="episode-number">第 {{s2[0].audio.no}} 集</span>
+            <span class="episode-name">{{s2[0].audio.audio_name}}</span>
+            <span class="check">
+              <a href="#" data-record-id="{{s2[0].record_id}}">查看紀錄</a>
+            </span>
+          </li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% for s1 in session1 %}
+      {% for s2 in session2 %}
+        {% if s2[0].audio.audio_channel == s1.channel_id %}
+    <div id="record{{s2[0].record_id}}" class="record">
+      <div class="board">
+        <div class="tab"><a href="#" class="back">返回所有節目</a></div>
+        <div class="episode-title">
+          {{s2[0].audio.audio_name}}
+        </div>
+        <div class="record-content">
+          {% for qs in s2[1] %}
+          <div class="quiz">
+            <div class="question">{{ qs. content }}</div>
+            <ul>
+              {% for option in qs.options %}
+              <li class="answer{% if qs.answer == option.id %}
+              {% if qs.answer == qs.user_answer %} cor {% elif qs.answer != qs.user_answer %} cor {% endif %}
+            {% elif qs.user_answer == option.id %} err {% endif %}">{{ option.label}}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+  </section>
+{% endblock %}

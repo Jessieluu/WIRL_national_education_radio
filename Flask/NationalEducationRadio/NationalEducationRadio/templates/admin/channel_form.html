@@ -1,0 +1,43 @@
+{% extends "layout/admin.html" %}
+{% block title %}廣播節目{{behavior}}{% endblock %}
+{% block cms_title %}廣播節目{{behavior}}{% endblock %}
+{% block box_header %}{% endblock %}
+{% block content %}
+      		{{ form.hidden_tag() }}
+			<div class="form-group">
+			  <label for="channel_name">廣播節目名稱</label>
+        	  {{ form.channel_name(class="form-control", placeholder="輸入欲新增之節目名稱") }}
+			</div>
+
+			<div class="form-group">
+			  <label for="NameofTelevise">廣播節目類別</label></br>
+        	  {{ form.channel_category(class="form-control", placeholder="") }}
+			</div>
+			
+			<div class="form-group">
+			  <label for="channel_memo">廣播節目敘述</label>
+        	  {{ form.channel_memo(class="form-control", placeholder="輸入欲新增之節目名稱") }}
+        	  {{ form.channel_id() }}
+			</div>
+{% endblock %}
+{% block box_footer %}
+<button class="btn btn-primary btn-block" type="submit">{{behavior}}</button>
+{% endblock %}
+
+{% block before_box %}
+<form method="POST">
+{% endblock %}
+{% block after_box %}
+</form>
+{% endblock %}
+{% block after_body %}
+  {{ super() }}
+  {% if readonly %}
+<script>
+  $(function () {
+  	readonly =
+  	$("input, textarea, select").attr("readonly", true)
+  });
+</script>
+ {% endif %}
+{% endblock %}

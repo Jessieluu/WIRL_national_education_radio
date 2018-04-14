@@ -1,0 +1,15 @@
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        server_name _;
+        location / {
+                include uwsgi_params;
+                uwsgi_param SCRIPT_NAME /national_education_radio;
+                uwsgi_modifier1 30;
+                uwsgi_pass unix:/var/www/national_education_radio/run.sock;
+                keepalive_timeout 120;
+                uwsgi_read_timeout 120;
+                client_max_body_size 200m;
+        }
+
+}

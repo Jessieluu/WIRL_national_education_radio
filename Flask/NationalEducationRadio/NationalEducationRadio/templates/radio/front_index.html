@@ -1,0 +1,95 @@
+{% extends "layout/front.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{super()}}
+  <script type="text/javascript" src="{{url_for('static', filename='js/p5.min.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/sketch.js')}}"></script>
+{% endblock %}
+{% block body_css %}
+home-page
+{% endblock %}
+{% block body %}
+  <section class="section1">
+    
+    <div id="animation"></div>
+    <div class="background-grey"></div>
+
+    <div class="frame">
+      <div class="player" id="main">
+      </div>
+      <div class="player-feet"></div>
+      <div class="player-feet2"></div>
+
+      <div class="tag">
+        <p>音檔</p>
+      </div>
+      <div class="tag2"></div>
+
+      <div class="series">
+        <div class="series-info">
+          <div class="series-info-pic"></div><!--此系列縮圖 替換bg圖片-->
+          <div class="series-info-text">
+            <div class="series-title"><!--此系列名稱-->
+              {{audios[0].channel.channel_name}}
+            </div>
+            <div class="series-number">
+              共<span>{{audios|length}}</span>集<!--此系列有幾集-->
+            </div>
+          </div>
+        </div>
+        <ul class="episodes" id="right_menu"><!--此系列所有節目-->
+          {% for audio in audios %}
+          <li value="{{audio.audio_id}}">
+            <a href="{{url_for('radio.show', channel_id=audio.audio_channel, audio_id=audio.audio_id)}}"
+            {% if audio.audio_id == targetAudio.audio_id %}class="this-episode"{% endif %}
+            >
+            <!--現在在播放的節目 給this-episode這個class-->
+              <span class="episode-number">第 {{ audio.no }} 集</span>
+              <span class="episode-name">{{ audio.audio_name }}</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% if nextAudio is not none %}
+        <a href="{{url_for('radio.show', channel_id=nextAudio.audio_channel, audio_id=nextAudio.audio_id)}}" class="next-episode">
+          下一系列：
+          <span>{{nextChannel.channel_name}}</span>
+          <span><i class="fa fa-chevron-right" aria-hidden="true"></i></span>
+        </a>
+        {% else %}
+        <a href="{{url_for('radio.newIndex')}}" class="next-episode">
+          回到首頁
+          <span><i class="fa fa-home" aria-hidden="true"></i></span>
+        </a>
+
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="section2">
+    <div class="frame">
+      <img src="{{url_for('static', filename='images/mibo.png')}}" class="mibo" alt="麥寶圖片">
+      <div class="interactive">
+        <div class="text">只聽廣播不過癮嗎？快來挑戰看看互動答題吧！</div>
+        <div class="interactive-control">
+          <span class="interactive-button-text">互動答題模式</span>
+          <span class="interactive-button">
+            <input id="switch" class="switch" type="checkbox" value="{{audios[0].audio_id}}"/>
+            <label class="switch-label" for="switch">Label Text</label>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endblock %}
+
+{% block after_body %}
+
+<script>
+  var url= "{{json_file}}";
+</script>
+
+<script src="{{url_for('static', filename='js/radio.production.min.js')}}?{{ range(1, 9999999999999) | random }}"></script>
+
+{% endblock %}

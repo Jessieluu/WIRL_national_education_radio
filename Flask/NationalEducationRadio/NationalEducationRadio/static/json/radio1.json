@@ -1,0 +1,62 @@
+{
+	"audio": "/static/upload/創設市集-唐老師.wav",
+	"title": "創設市集-唐老師",
+	"logo": "/static/images/covers/1.jpg",
+	"depiction": "鎖定設計相關時事、國際設計趨勢、台灣設計新秀或是設計美學培養等議題，邀請相關的專家來賓進行訪談；甚至將大眾關心的議題提出，進行討論。",
+	"forward":"/rrrrr/2",
+	"backward":"#",
+	"questions":[
+		{
+			"id":1, 
+			"content":"設計APP時應符合何種人的需求？", 
+			"type":"single",
+			"start":901,
+			"end":910,
+			"answer":[4],
+			"options":[
+				{"id":1, "label":"年輕人"}, 
+				{"id":2, "label":"對手機操控很熟的人"}, 
+				{"id":3, "label":"對手機操控不熟的人"},
+				{"id":4, "label":"所以想使用此APP者"}]
+		},
+		{
+			"id":2, 
+			"content":"如何設計一個好的APP？", 
+			"type":"single",
+			"start":1029,
+			"end":1039,
+			"answer":[8],
+			"options":[
+				{"id":5, "label":"了解使用者需求"}, 
+				{"id":6, "label":"界面讓操作者方便使用"},
+				{"id":7, "label":"操作上不過於複雜"},
+				{"id":8, "label":"以上皆是"}]
+		},
+		{
+			"id":3, 
+			"content":"何謂設計思考者？", 
+			"type":"single",
+			"start":322,
+			"end":332,
+			"answer":[10],
+			"options":[
+				{"id":9, "label":"念設計科系相關的人"}, 
+				{"id":10, "label":"用設計師慣用思考模式的人"}, 
+				{"id":11, "label":"懂設計軟體的人"},
+				{"id":12, "label":"愛好動手操作者"}]
+		},
+		{
+			"id":4, 
+			"content":"何謂設計？", 
+			"type":"single",
+			"start":821,
+			"end":831,
+			"answer":[13],
+			"options":[
+				{"id":13, "label":"創意解決問題的過程"}, 
+				{"id":14, "label":"跟繪圖相關事物"},
+				{"id":15, "label":"新奇古怪的想法"},
+				{"id":16, "label":"來夠帶來產值的作品"}]
+		}
+	]
+}

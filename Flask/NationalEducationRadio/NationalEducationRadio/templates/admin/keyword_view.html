@@ -1,0 +1,42 @@
+{% extends "layout/admin.html" %}
+{% block title %}節目音檔{{behavior}}{% endblock %}
+{% block cms_title %}節目音檔{{behavior}}{% endblock %}
+{% block box_header %}{% endblock %}
+{% block content %}
+  		{{ form.hidden_tag() }}
+      	{{ audio.name }}
+      	{% if (success == True) %}
+			<div class="form-group">
+			  <label>關鍵字</label></br>
+        	  {{ keywords }}
+			</div>
+			<div class="form-group">
+			  <label>摘要</label></br>
+        	  {{ summary }}
+			</div>
+		{% endif %}
+			<div class="form-group">
+			  <label for="keyword_content">逐字稿</label></br>
+        	  {{ form.keyword_content(class="form-control", placeholder="請輸入內容") }}
+			</div>
+			
+  			
+{% endblock %}
+{% block box_footer %}
+{% if (success == True) %}
+	<a href="{{url_for('admin.audio', channel_id = audio.channel.channel_id)}}" class="btn btn-success btn-block">
+		回上一頁
+	</a>
+{% endif %}
+	<button class="btn btn-primary btn-block" type="submit">擷取關鍵字</button>
+{% endblock %}
+
+{% block before_box %}
+<form method="POST" enctype="multipart/form-data">
+{% endblock %}
+{% block after_box %}
+</form>
+{% endblock %}
+{% block after_body %}
+  {{ super() }}
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "layout/admin.html" %}
+{% block title %}節目音檔{{behavior}}{% endblock %}
+{% block cms_title %}節目音檔{{behavior}}{% endblock %}
+{% block box_header %}{% endblock %}
+{% block content %}
+      		{{ form.hidden_tag() }}
+			<div class="form-group">
+			  <label for="audio_name">音檔名稱</label>
+        	  {{ form.audio_name(class="form-control", placeholder="輸入欲新增之音檔名稱") }}
+			</div>
+
+			<div class="form-group">
+			  <label for="NameofTelevise">廣播節目</label></br>
+			  <input type="text" readonly="readonly" class="form-control" value="{{channel.channel_name}}">
+        	  {{ form.audio_channel() }}
+			</div>
+			
+  			
+			<div class="form-group">
+			  <label for="audio_file">上傳音檔</label>
+        	  {{ form.audio_file(class="form-control", placeholder="選擇欲上傳的音檔") }}
+			</div>
+			
+			<div class="form-group">
+			  <label for="audio_file">上傳題目</label>
+        	  {{ form.audio_question(class="form-control", placeholder="選擇欲上傳的題目CSV") }}
+        	  {{ form.audio_id() }}
+			</div>
+			
+{% endblock %}
+{% block box_footer %}
+<button class="btn btn-primary btn-block" type="submit">{{behavior}}</button>
+{% endblock %}
+
+{% block before_box %}
+<form method="POST" enctype="multipart/form-data">
+{% endblock %}
+{% block after_box %}
+</form>
+{% endblock %}
+{% block after_body %}
+  {{ super() }}
+  {% if readonly %}
+<script>
+  $(function () {
+  	$("input, textarea, select").attr("readonly", true);
+  	$("select").attr("disabled", true);
+  });
+  $("form").submit(function () {
+  	$("select").attr("disabled", false);
+  	return true;
+  });
+</script>
+ {% endif %}
+ {% if isdelete %}
+<script>
+  $(function () {
+  	$("input[type=file]").parent().css("display", "none");
+  });
+</script>
+ {% endif %}
+{% endblock %}

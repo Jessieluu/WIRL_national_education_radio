@@ -1,0 +1,27 @@
+{% extends "layout/radio.html" %}
+{% block title %}Index{% endblock %}
+{% block content %}
+    <div>
+      <h1>作答紀錄</h1>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Audio Name</th>
+            <th>查看</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for record in records %}
+        <tr>
+            <td>{{record}}</td>
+            <td><a href="{{url_for('radio.view', record_id=record.record_id)}}">查看作答結果</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block after_body %}
+
+{% endblock %}

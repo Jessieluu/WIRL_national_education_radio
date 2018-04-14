@@ -1,0 +1,55 @@
+
+{% extends "layout/admin.html" %}
+{% block title %}廣播清單{% endblock %}
+{% block cms_title %}廣播清單{% endblock %}
+{% block box_header %}Hello {{user.name}} !{% endblock %}
+{% block content %}
+	<table id="example1" class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>廣播節目名稱</th>
+				<th>節目所屬類別</th>
+				<th>音檔管理</th>
+				<th>編輯 / 刪除</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for chal in chals %}
+			<tr>
+				<td>{{chal.channel_name}}</td>
+				<td>{{chal.category.category_name}}</td>
+				<td>
+				<a href="{{url_for('admin.audio', channel_id=chal.channel_id)}}" class="btn btn-info">
+					<span class="glyphicon glyphicon-file"></span>
+				</a> 
+				</td>
+				<td>
+				<a href="{{url_for('admin.channel_update', id=chal.channel_id)}}" class="btn btn-info">
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a> 
+
+				<a href="{{url_for('admin.channel_delete', id=chal.channel_id)}}" class="btn btn-danger">
+					<span class="glyphicon glyphicon-trash"></span>
+				</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<th>廣播節目名稱</th>
+				<th>節目所屬類別</th>
+				<th>音檔管理</th>
+				<th>新增/編輯</th>
+			</tr>
+		</tfoot>
+	</table>
+{% endblock %}
+{% block after_body %}
+  {{ super() }}
+<script>
+  $(function () {
+    $("#example1").DataTable();
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "layout/radio.html" %}
+{% block title %}Index{% endblock %}
+{% block content %}
+    <div>
+      <h1>作答紀錄</h1>
+
+      <table id="example1" class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>題目</th>
+          <th>A</th>
+          <th>B</th>
+          <th>C</th>
+          <th>D</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for question in questions %}
+        <tr>
+          <td>{{question.content}}{{question.user_answer}}{{question.answer}}</td>
+
+          {% for option in question.options %}
+          <td>
+          
+          {% if question.answer == option.id %}
+            {% if question.answer == question.user_answer %}
+                <span style="color:green">
+            {% elif question.answer != question.user_answer %}
+                <span style="color:green">
+            {% endif %}
+          {% elif question.user_answer == option.id %}
+            <span style="color:red">
+          {% endif %}
+            {{ option.label}}
+            </span>
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+{% endblock %}
+{% block after_body %}
+
+{% endblock %}

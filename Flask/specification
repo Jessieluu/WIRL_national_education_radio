@@ -1,0 +1,15 @@
+Database
+	Users
+		[users_id, users_username, users_password] 不一定需要
+	category
+		category_id, category_name, [category_cover]
+	channel
+		channel_id, channel_name, channel_category, channel_memo
+	program
+		program_id, program_channel, program_datetime, 
+		program_subject, program_audio
+		[program_context => solr, 摘要]
+
+
+
+

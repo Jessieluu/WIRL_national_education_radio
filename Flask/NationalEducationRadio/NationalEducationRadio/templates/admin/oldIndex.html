@@ -1,0 +1,12 @@
+{% extends "layout/admin.html" %}
+{% block title %}後台登入頁面{% endblock %}
+{% block content %}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.name(class="form-control", placeholder="帳號") }}
+        {{ form.password(class="form-control", placeholder="密碼") }}
+        <button type="submit">
+            <span>Login</span>
+        </button>
+    </form>
+{% endblock %}

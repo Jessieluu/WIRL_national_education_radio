@@ -1,0 +1,30 @@
+{% extends "layout/radio.html" %}
+{% block title %}Index{% endblock %}
+{% block content %}
+    <div class="left">
+        <div id="main"></div>
+    </div>
+    <div class="right">
+      <div class="playlist_title">播放列表</div>
+      <ul class="playlist">
+        {% for ado in ados %}
+          <a href="{{url_for('radio.show', channel_id=ado.channel.channel_id, audio_id=ado.audio_id)}}">
+            <li class="list_item">
+              <div class="item_box">
+                <img src="{{url_for('static', filename='images/covers/'~loop.index~'.jpg')}}">
+              </div>
+              <div class="item_title">{{ado.channel.channel_name}}</div>
+              <div class="item_type">{{ado.channel.category.category_name}}</div>
+            </li>
+          </a>
+        {% endfor%}
+      </ul>
+    </div>
+{% endblock %}
+{% block after_body %}
+<script>
+  var url= "{{json_file}}";
+</script>
+
+<script src="{{url_for('static', filename='js/radio.production.min.js')}}"></script>
+{% endblock %}

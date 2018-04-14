@@ -1,0 +1,37 @@
+{% extends "layout/radio.html" %}
+{% block title %}Index{% endblock %}
+{% block content %}
+    <div class="left">
+      <h1>會員註冊</h1>
+        <form method="post">
+          {{ form.hidden_tag() }}
+
+          <div class="form-group">
+            <label for="name">ID</label>
+            {{ form.name(class="form-control", placeholder="ID") }}
+          </div>
+          <div class="form-group">
+            <label for="account">帳號</label>
+            {{ form.account(class="form-control", placeholder="帳號") }}
+          </div>
+          <div class="form-group">
+            <label for="password">密碼</label>
+            {{ form.password(class="form-control", placeholder="密碼") }}
+          </div>
+            <button type="submit" class="btn btn-primary btn-block">
+            登入
+            </button>
+        </form>
+
+    </div>
+    <div class="right">
+
+        <h1>加入會員</h1>
+        <a href="{{url_for('radio.register')}}" class="btn btn-info btn-block">
+            註冊會員
+        </a>
+    </div>
+{% endblock %}
+{% block after_body %}
+
+{% endblock %}
