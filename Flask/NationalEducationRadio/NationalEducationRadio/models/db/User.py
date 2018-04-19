@@ -29,6 +29,7 @@ class User(db.Model):
     name = db.Column(db.String(64, collation='utf8_unicode_ci'))
     FBuserID = db.Column(db.String(255))
     FBAccessToken = db.Column(db.String(255))
+    GOOGLEuserID = db.Column(db.String(255))
     level = db.Column(db.SmallInteger)
     most_use_time = db.Column(db.String(64, collation='utf8_unicode_ci'), default="evening")
 

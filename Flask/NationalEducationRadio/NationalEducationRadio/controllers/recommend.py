@@ -34,9 +34,9 @@ def countUserTimeHotPlay(top_k, user_id, recommendTable):
         return recommendTable
     timeHotPlay = TimeHotPlay.query.order_by(TimeHotPlay.count).all()
     # timeHotPlay numbers are three times audio numbers
-    #if len(timeHotPlay)/3 < top_k:
-    #    print("\ncountUserTimeHotPlay module do nothing!\n")
-    #    return recommendTable
+    if len(timeHotPlay)/3 < top_k:
+       print("\ncountUserTimeHotPlay module do nothing!\n")
+       return recommendTable
     # cold start end
 
     # for take top k audio
@@ -72,9 +72,9 @@ def timeHotPlay(top_k, user_id, recommendTable):
     dataSet = TimeHotPlay.query.order_by(TimeHotPlay.count).all()
 
     # cold start condition, if db does not have data then return
-    #if len(dataSet) < top_k:
-    #    print("\ntimeHotPlay module do nothing!\n")
-    #    return recommendTable
+    if len(dataSet) < top_k:
+       print("\ntimeHotPlay module do nothing!\n")
+       return recommendTable
 
     # get the most timeHot audio time_zone
     timeHotTimeZone = dataSet[len(dataSet)-1].time_zone
@@ -117,9 +117,9 @@ def hotPlay(top_k, recommendTable):
     hotPlay = HotPlay.query.order_by(HotPlay.audio_id).all()
 
     # cold start condition, if db does not have data then return
-    #if len(hotPlay) < top_k:
-    #    print("\nhotPlay module do nothing!\n")
-    #    return recommendTable
+    if len(hotPlay) < top_k:
+       print("\nhotPlay module do nothing!\n")
+       return recommendTable
 
     # iterator, for ordered dataSet from hotPlay db
     # update final recommend table
@@ -151,9 +151,9 @@ def opHabit(top_k, user_id, recommendTable):
 
     # cold start condition, if user operation_ranks len < 5 data then return.
     # data form: A,B,C  len:6
-    #if len(user.operation_ranks)/2+1 < top_k:
-    #    print("\nopHabit module do nothing!\n")
-    #    return recommendTable
+    if len(user.operation_ranks)/2+1 < top_k:
+       print("\nopHabit module do nothing!\n")
+       return recommendTable
 
     # for save audio which have user operation
     audio_operation_rank = {}
@@ -195,9 +195,9 @@ def similarAudio(top_k, user_id, audio_id, recommendTable):
     # db storage is json format
     tsimilar_audio = json.loads(audio.similar_audio)
     # cold start condition, if db does not have enough data then return
-    # if len(similar_audio) < top_k:
-    #    print("\nsimilarAudio module do nothing!\n")
-    #    return recommendTable
+    if len(tsimilar_audio) < top_k:
+       print("\nsimilarAudio module do nothing!\n")
+       return recommendTable
 
     # for take all element from json
     orderSimilarAudio = {}
@@ -416,12 +416,13 @@ def relationKeywords(top_k, user_id, recommendTable):
 
     # ******** Final audio recommendation by relationkeyword Start ********
     print("****** Start processing relationKeywords audio recommend table! ******\n")
-    audioDbLen = Audio.query.count()
+    # audioDbLen = Audio.query.count()
     # for sorting all audio count rank
     audioRankTable = {}
     # retrieval all watch audio expect top k rank audio
-    for i in range(1, audioDbLen+1):
+    for i in range(15, 21):  
         AudioId = i
+ 
         # exclude user top k audio
         if AudioId not in topAudioId:
             # get audio keyword by audio id
@@ -460,10 +461,7 @@ def relationKeywords(top_k, user_id, recommendTable):
     # ******** Final audio recommendation by relationkeyword End ********
 
 
-# radioRecSysCoreModule
-# using Composite pattern concept to write for convenient add new module
-@radio.route('/recommend/<int:user_id>/<int:audio_id>', methods=['GET', ])
-def recommend(user_id, audio_id):
+def do_recommend(user_id, audio_id):
     # initial top k audio
     top_k = 5
     recommendTable = {}
@@ -478,6 +476,20 @@ def recommend(user_id, audio_id):
     recommendTable = relationKeywords(top_k, user_id, recommendTable)
 
     # sort final recommend table
-    orderedRankTable = OrderedDict(sorted(recommendTable.items(), key=lambda t: t[1], reverse=True))
+    return OrderedDict(sorted(recommendTable.items(), key=lambda t: t[1], reverse=True))
+
+
+def recommend_audios(user_id, audio_id):
+    orderedRankTable = do_recommend(user_id, audio_id)
+    audios = []
+    for audio_id in orderedRankTable:
+        audios.append(Audio.query.filter_by(audio_id=audio_id).first())
+    return audios
+
+# radioRecSysCoreModule
+# using Composite pattern concept to write for convenient add new module
+@radio.route('/recommend/<int:user_id>/<int:audio_id>', methods=['GET', ])
+def recommend(user_id, audio_id):
+    orderedRankTable = do_recommend(user_id, audio_id)
     return json.dumps(orderedRankTable, ensure_ascii=False)
 

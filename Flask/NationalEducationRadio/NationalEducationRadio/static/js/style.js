@@ -144,4 +144,18 @@ function add_op_log(play_log, operation_code, operation_value){
     });
 }
 
+var is_show_recommend = false;
+function show_recommand(){
+    is_show_recommend = !is_show_recommend;
+
+    if(is_show_recommend){
+        document.getElementById('recommend_box').style.display='block';
+        document.getElementById('channel_list').style.display='none';
+    }
+    else{
+        document.getElementById('recommend_box').style.display='none';
+        document.getElementById('channel_list').style.display='block';
+    }
+       
+}
 

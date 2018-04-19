@@ -21,11 +21,13 @@ home-page
       <div class="player-feet2"></div>
 
       <div class="tag">
-        <p>音檔</p>
+        <a href="javascript:;" onclick="show_recommand()" class="tag_word">音檔</a>
       </div>
-      <div class="tag2"></div>
+      <div class="tag2">
+        <a href="javascript:;" onclick="show_recommand()" class="tag_word">推薦</a>
+      </div>
 
-      <div class="series">
+      <div class="series" id="channel_list" style="display: block;">
         <div class="series-info">
           <div class="series-info-pic"></div><!--此系列縮圖 替換bg圖片-->
           <div class="series-info-text">
@@ -50,6 +52,7 @@ home-page
           </li>
           {% endfor %}
         </ul>
+
         {% if nextAudio is not none %}
         <a href="{{url_for('radio.show', channel_id=nextAudio.audio_channel, audio_id=nextAudio.audio_id)}}" class="next-episode">
           下一系列：
@@ -64,6 +67,46 @@ home-page
 
         {% endif %}
       </div>
+
+      <div class="series" id="recommend_box" style="display: none;">
+        <div class="series-info">
+          <div class="series-info-pic"></div><!--此系列縮圖 替換bg圖片-->
+          <div class="series-info-text">
+            <div class="series-title"><!--此系列名稱-->
+              推薦節目
+            </div>
+            <div class="series-number"></div>
+          </div>
+        </div>
+        <ul class="episodes" id="right_menu"><!--此系列所有節目-->
+          {% for audio in recommend_audio %}
+          <li value="{{audio.audio_id}}">
+            <a href="{{url_for('radio.show', channel_id=audio.audio_channel, audio_id=audio.audio_id)}}"
+            {% if audio.audio_id == targetAudio.audio_id %}class="this-episode"{% endif %}
+            >
+            <!--現在在播放的節目 給this-episode這個class-->
+              <span class="episode-number"></span>
+              <span class="episode-name">{{ audio.audio_name }}</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% if nextAudio is not none %}
+        <a href="{{url_for('radio.show', channel_id=nextAudio.audio_channel, audio_id=nextAudio.audio_id)}}" class="next-episode">
+          下一系列：
+          <span>{{nextChannel.channel_name}}</span>
+          <span><i class="fa fa-chevron-right" aria-hidden="true"></i></span>
+        </a>
+        {% else %}
+        <a href="{{url_for('radio.newIndex')}}" class="next-episode">
+          回到首頁
+          <span><i class="fa fa-home" aria-hidden="true"></i></span>
+        </a>
+
+        {% endif %}
+      </div>
+
+      
     </div>
   </section>
 

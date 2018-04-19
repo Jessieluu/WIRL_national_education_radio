@@ -31,7 +31,7 @@ from NationalEducationRadio.models.db.SearchLog import SearchLog
 from NationalEducationRadio.models.db.SearchSelectedLog import SearchSelectedLog
 from NationalEducationRadio.models.db.KeywordsTable import KeywordsTable
 from NationalEducationRadio.models.recommend.batch import count_user_time_hot_play, similar_audio, hot_play, op_habit, timehotplay, keywordprocessing
-
+from NationalEducationRadio.controllers.recommend import recommend_audios
 from collections import OrderedDict
 import jieba
 import jieba.analyse
@@ -238,7 +238,10 @@ def show(channel_id, audio_id):
         summary = audio.channel.channel_memo
     else:
         keywords = keywords.split(" , ")
-    return render_template('radio/front_index.html', targetAudio=audio, audios=audios, nextChannel=nextChannel,
+
+    recommend_audio = recommend_audios(1, 5)
+    print(recommend_audio)
+    return render_template('radio/front_index.html', targetAudio=audio, audios=audios, recommend_audio = recommend_audio, nextChannel=nextChannel,
                            nextAudio=nextAudio,
                            success=success, summary=summary, keywords=keywords, page="show",
                            json_file=url_for('radio.showJson', channel_id=channel_id, audio_id=audio_id))
@@ -358,293 +361,6 @@ def get_new_audio_id():
     return json.dumps(json_content, ensure_ascii=False)
 
 
-# searchselect
-@radio.route('/searchselect', methods=['GET', ])
-def searchselect():
-    # setting query string
-    queryString = "education"
-    # query all similar keywords data from SearchLog db
-    searchLogdb = SearchLog.query.filter(SearchLog.search_text.ilike("%" + queryString + "%")).all()
-
-    # using search_id to link SearchSelectedLog db
-    # calculate audio rank
-    # initial parameters, rankTanble : save audio count rank
-    rankTable = {}
-    # iteration for query all similar keywords
-    for i in range(len(searchLogdb)):
-        # get search_id from SearchLogdb
-        searchLogdbId = searchLogdb[i].search_id
-        # query search_id from SearchSelectedLog db by search_id
-        searchSelectLogdb = SearchSelectedLog.query.filter_by(search_id=searchLogdbId)
-        # get audioId from SearchSelectedLog
-        audioId = searchSelectLogdb[0].audio
-        # calculate audio count
-        # must be initialized rankTable first if audioId not store on rankTable
-        # otherwise count plus one
-        if audioId not in rankTable:
-            rankTable[audioId] = 1
-        else:
-            rankTable[audioId] += 1
-    # sorting attribute count on rankTable by using OrderedDict
-    # output from largest to smallest
-    OrderedRankTable = OrderedDict(sorted(rankTable.items(), key=lambda t: t[1], reverse=True))
-    return json.dumps(OrderedRankTable)
-
-
-# searchkeywords
-@radio.route('/searchkeywords', methods=['GET', ])
-def searchkeywords():
-    # setting query string and my user id
-    queryString = "education"
-    myUserId = 1
-    # query all search similar keywords data from SearchLog db
-    searchLogdb = SearchLog.query.filter(SearchLog.search_text.ilike("%" + queryString + "%")).all()
-    # get all search similar keywords user
-    similarUser = []
-    for i in range(len(searchLogdb)):
-        if searchLogdb[i].user not in similarUser:
-            similarUser.append(searchLogdb[i].user)
-    # remove myUserid from all search similar keywords user
-    similarUser.remove(myUserId)
-
-    # use search similar keywords user to calculatedly watch audio count from PlayLog db
-    audioWatchRank = {}
-    for i in range(len(similarUser)):
-        # filter user information from PlayLog db by user id each time
-        oneUserWatchAudio = PlayLog.query.filter_by(user=similarUser[i]).all()
-        # get one user have seen audio
-        for j in range(len(oneUserWatchAudio)):
-            audioId = oneUserWatchAudio[j].audio
-            if audioId not in audioWatchRank:
-                audioWatchRank[audioId] = 1
-            else:
-                audioWatchRank[audioId] += 1
-    # sorting attribute audio count on audioWatchRank by using OrderedDict
-    # output from largest to smallest
-    OrderedRankTable = OrderedDict(sorted(audioWatchRank.items(), key=lambda t: t[1], reverse=True))
-    return json.dumps(OrderedRankTable)
-
-
-# keywordprocessing
-@radio.route('/keywordprocessing', methods=['GET', ])
-def keywordprocessing():
-
-    # ******** scrawler, get all article ********
-    url = "http://140.124.183.5:8983/solr/EBCStation/select?indent=on&q=*:*&rows=300&wt=json"
-    article = requests.get(url).json()
-    articleLen = 281
-
-    # ******** load Jieba setting ********
-    _resultDir = os.path.dirname(os.path.abspath(__file__)) + '/'
-    jieba.analyse.set_stop_words(_resultDir + 'dict_stop_words.txt')
-    jieba.set_dictionary(_resultDir + 'dict.txt.big')
-    jieba.load_userdict(_resultDir + 'stopwords.txt')
-
-    # ******** calculate TF-IDF Start ********
-
-    # done TF-IDF value calculate
-
-    corpus = []
-    for i in range(articleLen):
-        content = article['response']['docs'][i]['content']
-        Simpcontent = HanziConv.toSimplified(content)
-        js = json.dumps(Simpcontent, ensure_ascii=False)
-        words = jieba.cut(js, cut_all=True)
-        corpus.append(" ".join(words))
-
-    Top10alllist = dict()  # 儲存每則文的keywords
-
-    # update final tf_idf table
-    def addNumber(name, number):
-        if name in Top10alllist:
-            if Top10alllist[name] < number:
-                Top10alllist[name] = number
-        else:
-            Top10alllist[name] = number
-
-    # tf_idf API
-    countvec = CountVectorizer()  # ????文本中的???????矩?，矩?元素a[i][j] 表示j?在i?文本下的??
-    trans = TfidfTransformer()  # ?????每???的tf-idf?值
-
-    wordFrequence = countvec.fit_transform(corpus)
-    tfidf = trans.fit_transform(wordFrequence)  # 第一?fit_transform是?算tf-idf，第二?fit_transform是?文本????矩?
-
-    words = countvec.get_feature_names()  # ?取?袋模型中的所有??
-    Weight = tfidf.toarray()  # ?tf-idf矩?抽取出?，元素a[i][j]表示j?在i?文本中的tf-idf?重
-
-    # update td_idf table
-    for weight in Weight:
-        loc = np.argsort(-weight)  # 將weight降序排列也就是由大到小排列
-        for i in range(len(weight)):  # 每篇文章all keywords的tfidf值當作代表
-            tmp1 = words[loc[i]]
-            tmp2 = weight[loc[i]]
-            addNumber(tmp1, tmp2)
-
-    # sort tf_idf table
-    result = sorted(Top10alllist.items(), key=lambda Top10alllist: Top10alllist[1], reverse=True)
-
-    # ******** calculate TF-IDF End ********
-
-
-    # ******** relation Table processing Start ********
-    
-    # done relation table create 
-    
-    # clear relation table
-    cleardb = db.session.query(KeywordsTable).delete()
-    db.session.commit()
-
-    # relation table create
-    keyword_size = 100
-    # initial keywordAmount table for store result
-    keywordAmount = np.zeros((keyword_size, keyword_size), int)
-    # create relation table co-occurrence
-    for i in range(articleLen):
-        content = article['response']['docs'][i]['content']
-        Simpcontent = HanziConv.toSimplified(content)
-        for j in range(100):
-            if result[j][0] in content:
-                for k in range(100):
-                    if j == k:
-                        continue
-                    if result[k][0] in content:
-                        keywordAmount[j][k] += 1
-
-    keywords_id = 1
-    for i in range(100):
-        for j in range(100):
-            if i != j:
-                keywordA = result[i][0]
-                keywordB = result[j][0]
-                db.session.add(
-                    KeywordsTable(keywords_id=keywords_id, keyword1=keywordA, keyword2=keywordB, count=int(keywordAmount[i][j])))
-                keywords_id += 1
-        db.session.commit()
-
-    # ******** relation Table processing End ********
-
-
-    # ******** audio keyword processing Start ********
-
-    # done audio keyword save
-
-    # audio keyword threshold value
-    keywordParameter = 0.385
-    for i in range(4):
-        j = i+1
-        content = article['response']['docs'][i]['content']
-        Simpcontent = HanziConv.toSimplified(content)
-        audioKeyword = ""
-        rawKeyword = ""
-        # filter keyword appear in audio and tf-idf value bigger than threshold value
-        for r in range(100):
-                if result[r][0] in Simpcontent:
-                    rawKeyword += result[r][0] + ","
-                    if result[r][1] > keywordParameter:
-                        audioKeyword += result[r][0] + ","
-        # get first audio data information filter by audio id, for update audio keyword
-        audioData = Audio.query.filter_by(audio_id=j).first()
-        # update keyword , using string to avoid save error
-        audioData.keyword = str(audioKeyword)
-        # update raw_keyword , using string to avoid save error
-        audioData.raw_keyword = str(rawKeyword)
-        db.session.commit()
-
-    return str("keywordProcessing Done!")
-    # ******** audio keyword processing End ********
-
-# relationkeyword
-@radio.route('/relationkeyword', methods=['GET', ])
-def relationkeyword():
-
-    # ******** get user highest watch audio Id Start ********
-    queryUserId = 1
-    # filter all watch audio Id on one user
-    userPlayLog = PlayLog.query.filter_by(user=queryUserId).all()
-    rankTable = {}
-    # retrieval all watch audio ont one user
-    for i in range(len(userPlayLog)):
-        audioId = userPlayLog[i].audio
-        # calculate audio count
-        # must be initialized rankTable first if audioId not store on rankTable,otherwise count plus one
-        if audioId not in rankTable:
-            rankTable[audioId] = 1
-        else:
-            rankTable[audioId] += 1
-    # sorting attribute count on rankTable by using OrderedDict, output from largest to smallest
-    OrderedRankTable = OrderedDict(sorted(rankTable.items(), key=lambda t: t[1], reverse=True))
-
-    # ******** get user highest watch audio Id End ********
-
-
-    # ******** create relationkeywordset Start ********
-
-    # query top k rank audio
-    queryFlag = 2
-    # record my top k watch audio id
-    topAudioId = set()
-    # save all relation keyword by top k rank audio
-    relationKeywordSet = set()
-    for i in range(queryFlag):
-        # get highest rank audio id by sorted RankTable
-        highestAudioId = list(OrderedRankTable.items())[i]
-        # get audio keyword by audio id
-        getkeyword = Audio.query.filter_by(audio_id=highestAudioId[0]).first().keyword
-        # split "," on Db
-        splitList = getkeyword.split(",")
-        for j in splitList:
-            if j is not '':
-                relationKeywordSet.add(j)
-        topAudioId.add(highestAudioId[0])
-    # ******** create relationkeywordset End ********
-
-
-    # ******** Final audio recommendation by relationkeyword Start ********
-    audioDbLen = Audio.query.count()
-    # retrieval all watch audio expect top k rank audio
-    for i in range(1, audioDbLen+1):
-        AudioId = i
-        # exclude user top k audio
-        if AudioId not in topAudioId:
-            # get audio keyword by audio id
-            getkeyword = Audio.query.filter_by(audio_id=AudioId).first().keyword
-            # for calculate audio keyword appear count
-            audioCount = 0
-            # split "," on Db
-            splitList = getkeyword.split(",")
-            for j in splitList:
-                # if keyword appear both on relation keyword set and article, then this audio count plus one
-                if j in relationKeywordSet:
-                    audioCount += 1
-            # for sorting all audio count rank
-            audioRankTable = {}
-            if AudioId not in audioRankTable:
-                audioRankTable[AudioId] = audioCount
-            else:
-                return str("Error occur!")
-    # sorting attribute count on rankTable by using OrderedDict, output from largest to smallest
-    finalAudioCountTable = OrderedDict(sorted(audioRankTable.items(), key=lambda t: t[1], reverse=True))
-    # ******** Final audio recommendation by relationkeyword End ********
-    return json.dumps(finalAudioCountTable, ensure_ascii=False)
-
-
-@radio.route('/usertimehotplay/<int:user_id>', methods=['GET', ])
-def usertimehotplay(user_id):
-    """
-    取得使用者最常使用時段的時段推薦
-    """
-    user = User.query.filter_by(id=user_id).first()
-    time_hot_plays = TimeHotPlay.query.filter_by(time_zone=user.most_use_time).all()
-    result = []
-    for time_hot_plauy in time_hot_plays:
-        result.append({
-            "audio_id": time_hot_plauy.audio.audio_id,
-            "audio_name": time_hot_plauy.audio.audio_name,
-            "audio_channel": time_hot_plauy.audio.audio_channel
-        })
-    return json.dumps(result, ensure_ascii=False)
-
-
 @radio.route('/daily_batch/', methods=['GET', ])
 def daily_batch():
 
@@ -652,21 +368,21 @@ def daily_batch():
 
     print("****** Start processing Daily_batch ! ******\n", file=sys.stderr)
     #全系統
-    #keywordprocessing()
-    #similar_audio()
-    #hot_play()
-    #timehotplay()
+    # keywordprocessing()
+    similar_audio()
+    hot_play()
+    timehotplay()
     #全部使用者
     users = User.query.all()
     print("****** Start processing count_user_time_hot_play Module ! ******\n", file=sys.stderr)
-    #for user in users:
-    #    count_user_time_hot_play(user.id)
+    for user in users:
+       count_user_time_hot_play(user.id)
     print("****** Processing count_user_time_hot_play Module done ! ******\n", file=sys.stderr)
 
-    print("****** Start processing op_habit ! ******\n", file=sys.stderr)
-    #for user in users:
-    #    op_habit(user.id)
-    print("****** Processing op_habit done! ******\n", file=sys.stderr)
+    # print("****** Start processing op_habit ! ******\n", file=sys.stderr)
+    for user in users:
+       op_habit(user.id)
+    # print("****** Processing op_habit done! ******\n", file=sys.stderr)
 
     print("****** Processing Daily_batch done! ******\n", file=sys.stderr)
 

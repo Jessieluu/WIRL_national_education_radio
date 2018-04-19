@@ -33,8 +33,9 @@ def segmentation_one(id, content):
 def update_DF_Table(article):
 
 	global _resultDir
-	f = open(_resultDir + "df_table", "r")
-	df = json.loads(f.read(), encoding="UTF8")
+	f = open(_resultDir + "df_table", "r", encoding='UTF-8')
+	data = f.read()
+	df = json.loads(data, encoding="utf-8")
 	f.close()
 
 	result = {}
@@ -59,7 +60,7 @@ def update_DF_Table(article):
 	            else:
 	                df[word] += 1
 
-	f = open(_resultDir + "df_table", "w")
+	f = open(_resultDir + "df_table", "w", encoding="utf-8")
 	f.write(json.dumps(df, ensure_ascii=False))
 	f.close()
 
@@ -69,12 +70,12 @@ def tf_idf(article, rankCount = 10):
 	with open(config, 'r', encoding='utf-8') as infile:
 		docTotal = int(infile.read())
 	docTotal += 1
-	f = open(config, "w")
+	f = open(config, "w", encoding="utf-8")
 	f.write(str(docTotal))
 	f.close()
 
-	f = open(_resultDir + "df_table", "r")
-	df = json.loads(f.read(), encoding="UTF8")
+	f = open(_resultDir + "df_table", "r", encoding="utf-8")
+	df = json.loads(f.read(), encoding="utf-8")
 	f.close()
 	segments = article['seg_list']
 	f.close() 

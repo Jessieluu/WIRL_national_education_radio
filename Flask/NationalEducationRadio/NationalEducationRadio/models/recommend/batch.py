@@ -34,7 +34,7 @@ def count_user_time_hot_play(queryUserId):
     afternoon = 0
     evening = 0
     for i in range(len(dataSet)):
-        timeStamp = int(dataSet[i].star_time)
+        timeStamp = round(float(dataSet[i].star_time))
         structTime = time.localtime(timeStamp)
         audioTime = structTime.tm_hour
         if audioTime >= 4 and audioTime < 11:
@@ -134,17 +134,18 @@ def op_habit(queryUserId):
                 tmp = tmpCount[j]
                 tmpCount[j] = tmpCount[j+1]
                 tmpCount[j+1] = tmp
+    # print(tmpCount)
 
+    # for i in range(0, 4): 
+    #     # print(tmpCount[i]['play_log'])
+    #     playLog_back = PlayLog.query.filter_by(play_log_id=tmpCount[i]['play_log']).first()
+    #     tmpStr += str(playLog_back.audio) + ","
 
-    for i in range(0, 4): 
-        playLog_back = PlayLog.query.filter_by(play_log_id=tmpCount[i]['play_log']).first()
-        tmpStr += str(playLog_back.audio) + ","
-
-    playLog_back = PlayLog.query.filter_by(play_log_id=tmpCount[4]['play_log']).first()
-    tmpStr += str(playLog_back.audio)
-    user = User.query.filter_by(id=queryUserId).first()
-    user.operation_ranks = tmpStr
-    db.session.commit()
+    # playLog_back = PlayLog.query.filter_by(play_log_id=tmpCount[4]['play_log']).first()
+    # tmpStr += str(playLog_back.audio)
+    # user = User.query.filter_by(id=queryUserId).first()
+    # user.operation_ranks = tmpStr
+    # db.session.commit()
     print("****** Processing hot_play Module done! ******\n", file=sys.stderr)
 
 # need to final, done
@@ -162,7 +163,7 @@ def timehotplay():
         # take playLog information
         currentAudioId = dataSet[i].audio
         # partition time zone
-        timeStamp = int(dataSet[i].star_time)
+        timeStamp = round(float(dataSet[i].star_time))
         structTime = time.localtime(timeStamp)
         audioTime = structTime.tm_hour
         if audioTime >= 4 and audioTime < 11:
@@ -216,7 +217,7 @@ def keywordprocessing():
         content = article['response']['docs'][i]['content']
         Simpcontent = HanziConv.toSimplified(content)
         js = json.dumps(Simpcontent, ensure_ascii=False)
-        words = jieba.cut(js, cut_all=True)
+        words = jieba.cut(js, cut_all=False)
         corpus.append(" ".join(words))
 
     Top10alllist = dict()  # 儲存每則文的keywords
@@ -292,7 +293,7 @@ def keywordprocessing():
     # audio keyword threshold value
     print("Starting calculated audio keyword!\n", file=sys.stderr)
     keywordParameter = 0.385
-    for i in range(5):
+    for i in range(14, 19):
         j = i+1
         content = article['response']['docs'][i]['content']
         Simpcontent = HanziConv.toSimplified(content)

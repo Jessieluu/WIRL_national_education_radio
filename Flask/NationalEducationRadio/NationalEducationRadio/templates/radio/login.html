@@ -20,9 +20,10 @@
                 <input type="checkbox"/>記得我，下次自動登入
               </label>
             </div>
-            <button type="button" onclick="checkFBlogin();" class="btn">FB</button>
-            <div class="g-signin2" data-onsuccess="onSignIn"></div>            
             <button type="submit" class="btn login_page-btn">登入</button>
+            <button type="button"  style="float:left; margin-top:10px;" onclick="checkFBlogin();" class="btn btn-primary btn-block">FB login</button>
+            <!-- <div class="fb-login-button" style="float:left; padding-top:10px;" data-button-type="continue_with" data-size="large" type="button" onclick="checkFBlogin();"></div> -->
+            <div class="g-signin2"  class="btn btn-default"  data-width="250px" style="float:left; padding-top:10px;" data-onsuccess="onSignIn"></div>            
           </form>
       </div>
       <div class="col-sm-2 text-center hidden-xs">

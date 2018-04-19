@@ -477,19 +477,6 @@ html .home-page {
           .player-feet2 {
             display: none; } }
 
-      .tag {
-        width: 50px;
-        height: 36px;
-        background-color: #abcdef;
-        float: left;
-        position: absolute;
-        z-index: 10;
-        margin-top: -36px;
-        margin-left: 530px;
-        border-radius: 7px 7px 0 0; }
-        @media (min-width: 992px) {
-            .tagt {
-            display: none; } }
       html .home-page .section1 .frame .series {
         position: relative;
         background-color: white;
@@ -1333,3 +1320,38 @@ form{
   outline: none; }
 
 /*# sourceMappingURL=question.css.map */
+
+/* recommand */
+.tag {
+  width: 50px;
+  height: 36px;
+  background-color: #abcdef;
+  float: left;
+  position: absolute;
+  z-index: 10;
+  margin-top: -36px;
+  margin-left: 530px;
+  border-radius: 7px 7px 0 0; 
+}
+
+.tag2 {
+  width: 50px;
+  height: 36px;
+  background-color: #abcdef;
+  float: left;
+  position: absolute;
+  z-index: 10;
+  margin-top: -36px;
+  margin-left: 590px;
+  border-radius: 7px 7px 0 0; 
+}
+
+.tag_word{
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.recommend_box{ 
+  position: absolute; 
+  z-index: 100 ;
+}
