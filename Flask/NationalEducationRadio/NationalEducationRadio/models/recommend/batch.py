@@ -12,7 +12,6 @@ from NationalEducationRadio.models.db.KeywordsTable import KeywordsTable
 from NationalEducationRadio.models.db.OperationLog import OperationLog
 from NationalEducationRadio.models.db.HotPlay import HotPlay
 
-
 from collections import OrderedDict, Set
 import jieba
 import jieba.analyse
@@ -65,13 +64,11 @@ def similar_audio():
         ranking = []
         if audio_x.keyword == "" or audio_x.keyword == None:
             continue
-
         for audio_y in audios:
             if audio_x.audio_id == audio_y.audio_id:
                 continue
             if audio_y.keyword == "" or audio_y.keyword == None:
                 continue
-            #print(audio_x.keyword)
             keywords_x = audio_x.keyword.split(',')
             keywords_y = audio_y.keyword.split(',')
             keyword_counter = 0
@@ -159,6 +156,7 @@ def timehotplay():
     afternoon = 0
     evening = 0
     primaryId = 1
+    TimeHotPlay.query.delete()
     for i in range(len(dataSet)):
         # take playLog information
         currentAudioId = dataSet[i].audio
@@ -178,7 +176,7 @@ def timehotplay():
         # both above do, delete information on DB by currentAudioId
         # then add parameters with AudioID information to DB
         if i + 1 < len(dataSet) and currentAudioId is not dataSet[i + 1].audio or i + 1 is len(dataSet):
-            TimeHotPlay.query.filter_by(audio_id=currentAudioId).delete()
+            #TimeHotPlay.query.filter_by(audio_id=currentAudioId).delete()
             db.session.add(TimeHotPlay(id=primaryId, audio_id=currentAudioId, count=morning, time_zone="morning"))
             primaryId += 1
             db.session.add(TimeHotPlay(id=primaryId, audio_id=currentAudioId, count=afternoon, time_zone="afternoon"))
@@ -193,12 +191,12 @@ def timehotplay():
 
     print("****** Processing hot_play Module done! ******\n", file=sys.stderr)
 
-# done
+# need to change url
 def keywordprocessing():
 
-    print("****** Start keywordProcessing Module! ******\n", file=sys.stderr)
+    print("****** Start keywordProcessing Module! ******\n")
     # ******** scrawler, get all article ********
-    url = "http://140.124.183.5:8983/solr/EBCStation/select?indent=on&q=*:*&rows=300&wt=json"
+    url = "http://127.0.0.1/solr/EBCStation/select?indent=on&q=*:*&rows=9999&wt=json"
     article = requests.get(url).json()
     # still need to find a way to getting all article length
     articleLen = article['response']['numFound']
@@ -211,7 +209,7 @@ def keywordprocessing():
 
 
     # ******** calculate TF-IDF Start ********
-    print("Starting calculated TF-IDF!\n", file=sys.stderr)
+    print("Starting calculated TF-IDF!\n")
     corpus = []
     for i in range(articleLen):
         content = article['response']['docs'][i]['content']
@@ -259,29 +257,34 @@ def keywordprocessing():
     cleardb = db.session.query(KeywordsTable).delete()
     db.session.commit()
 
-    # relation table create
-    keyword_size = 100
+
+    if len(result) > 100:
+        result_length = 100
+    else:
+        result_length = len(result)
+
     # initial keywordAmount table for store result
-    keywordAmount = np.zeros((keyword_size, keyword_size), int)
+    keywordAmount = np.zeros((result_length, result_length), int)
     # create relation table co-occurrence
+
     for i in range(articleLen):
         content = article['response']['docs'][i]['content']
         Simpcontent = HanziConv.toSimplified(content)
-        for j in range(100):
+        for j in range(result_length):
             if result[j][0] in content:
-                for k in range(100):
+                for k in range(result_length):
                     if j == k:
                         continue
                     if result[k][0] in content:
                         keywordAmount[j][k] += 1
     keywords_id = 1
-    for i in range(100):
-        for j in range(100):
+    for i in range(result_length):
+        for j in range(result_length):
             if i != j:
                 keywordA = result[i][0]
                 keywordB = result[j][0]
                 db.session.add(
-                    KeywordsTable(keywords_id=keywords_id, keyword1=keywordA, keyword2=keywordB, count=int(keywordAmount[i][j])))
+                    KeywordsTable(keywords_id=keywords_id, keyword1=HanziConv.toTraditional(keywordA), keyword2=HanziConv.toTraditional(keywordB), count=int(keywordAmount[i][j])))
                 keywords_id += 1
         db.session.commit()
     print("Calculated relation Table done!\n", file=sys.stderr)
@@ -293,20 +296,28 @@ def keywordprocessing():
     # audio keyword threshold value
     print("Starting calculated audio keyword!\n", file=sys.stderr)
     keywordParameter = 0.385
-    for i in range(14, 19):
+    for i in range(articleLen):
         j = i+1
-        content = article['response']['docs'][i]['content']
+        solrData = article['response']['docs'][i]
+        content = solrData['content']
         Simpcontent = HanziConv.toSimplified(content)
         audioKeyword = ""
         rawKeyword = ""
         # filter keyword appear in audio and tf-idf value bigger than threshold value
-        for r in range(100):
+        flag = 0
+        for r in range(result_length-1):
+            if flag == 0:
                 if result[r][0] in Simpcontent:
-                    rawKeyword += result[r][0] + ","
+                    rawKeyword += HanziConv.toTraditional(result[r][0])
                     if result[r][1] >= keywordParameter:
-                        audioKeyword += result[r][0] + ","
+                        audioKeyword += HanziConv.toTraditional(result[r][0])
+            else:
+                if result[r][0] in Simpcontent:
+                    rawKeyword += "," + HanziConv.toTraditional(result[r][0])
+                    if result[r][1] >= keywordParameter:
+                        audioKeyword += "," + HanziConv.toTraditional(result[r][0])
         # get first audio data information filter by audio id, for update audio keyword
-        audioData = Audio.query.filter_by(audio_id=j).first()
+        audioData = Audio.query.filter_by(audio_id=solrData['audio_id']).first()
         # update keyword , using string to avoid save error
         audioData.keyword = str(audioKeyword)
         # update raw_keyword , using string to avoid save error

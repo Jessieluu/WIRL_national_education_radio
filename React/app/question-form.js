@@ -186,6 +186,16 @@ export default class QuestionTable extends React.Component {
         return(<button className="skip" onClick={close}>跳過 >></button>);
     }
 
+    keywords(){
+        var keywords = this.props.keywords;
+
+        return(<div className="keywords">
+            {this.props.keywords.map((word) => (
+                <span>#{word}</span>
+            ))}
+        </div>);
+    }
+
     question() {
         if ($(".switch:checked").length == 0) {
             return;
@@ -228,12 +238,8 @@ export default class QuestionTable extends React.Component {
 				<div className="intro-title">節目摘要</div>
                 <div className="intro-content">
                     {this.props.depiction}
-                </div>   
-				<div className="keywords">
-					<span>#大自然</span>
-					<span>#生態旅遊</span>
-					<span>#環境</span>
-				</div>
+                </div>
+                {this.keywords()} 
                 {this.question()} 
             </div>            
         );

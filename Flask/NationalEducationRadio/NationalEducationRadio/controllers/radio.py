@@ -10,7 +10,7 @@ from flask import Flask, redirect, url_for, render_template, session, flash, req
 from flask.ext.login import current_user, login_required, logout_user, login_user
 from sqlalchemy import desc
 from sqlalchemy import exists
-
+import ast
 from NationalEducationRadio.service import get_blueprint
 from NationalEducationRadio.service import db
 from NationalEducationRadio.models.db.User import User, AccessLevel
@@ -46,8 +46,12 @@ from collections import Set
 from flask_login import UserMixin, LoginManager, login_required, current_user, login_user, logout_user
 
 
+root = get_blueprint('root')
 radio = get_blueprint('radio')
 
+@root.route('/', methods=['GET', ])
+def root_index():
+    return redirect(url_for('radio.index'))
 
 @radio.route('/', methods=['GET', ])
 @login_required
@@ -109,6 +113,12 @@ def showJson(channel_id, audio_id):
     json_content['forward'] = url_for('radio.show', channel_id=channel_id, audio_id=nxt) if nxt is not None else "#"
     json_content['backward'] = url_for('radio.show', channel_id=channel_id, audio_id=pre) if pre is not None else "#"
     json_content['questions'] = json.loads(audio.audio_question)
+    
+    keyword = []
+    if audio.keyword is not None:
+        keyword = audio.keyword.split(",")
+
+    json_content['keywords'] = keyword
     return json.dumps(json_content, ensure_ascii=False)
 
 
@@ -239,7 +249,7 @@ def show(channel_id, audio_id):
     else:
         keywords = keywords.split(" , ")
 
-    recommend_audio = recommend_audios(1, 5)
+    recommend_audio = recommend_audios(current_user.id, audio_id)
     print(recommend_audio)
     return render_template('radio/front_index.html', targetAudio=audio, audios=audios, recommend_audio = recommend_audio, nextChannel=nextChannel,
                            nextAudio=nextAudio,
@@ -368,7 +378,7 @@ def daily_batch():
 
     print("****** Start processing Daily_batch ! ******\n", file=sys.stderr)
     #全系統
-    # keywordprocessing()
+    keywordprocessing()
     similar_audio()
     hot_play()
     timehotplay()
@@ -434,3 +444,62 @@ def API_GOOGLE_login():
     db.session.commit()
     
     return '11'
+
+
+
+# need to change keyword search
+@radio.route('/knowledge', methods=['GET', ])
+def knowledge():
+    finalResult = []
+    # get search keyword
+    #keyword = str(request.args.get('keyword'))
+    keyword = "廣播"
+    # scrawler setting
+    url = "http://127.0.0.1/solr/EBCStation/select?indent=on&q=*:*&rows=999&wt=json"
+    article = requests.get(url).json()
+    # db length
+    articleLen = article['response']['numFound']
+    # save audio_id
+    audioID = set()
+    # filter Audio ID
+    for a in range(articleLen):
+        if len(audioID) is 100:
+            break
+        if keyword in article['response']['docs'][a]['content']:
+            audioID.add(article['response']['docs'][a]['audio_id'])
+    print(audioID)
+    # query Audio Info from db
+    for i in audioID:
+        # save one audio format result
+        result = {}
+        audioInfo = Audio.query.filter_by(audio_id=i).first()
+        if audioInfo is None:
+            continue
+        result["id"] = i
+        # processing keyword string format
+        keywordList = []
+        if audioInfo.keyword is not None:
+            for k in HanziConv.toTraditional(audioInfo.keyword).split(","):
+                if k is not '':
+                    keywordList.append(k)
+        # save json format parameters
+        result["keyword"] = keywordList
+        result["type"] = audioInfo.audio_channel
+        result["title"] = audioInfo.audio_name
+        result["text"] = ""
+        # get similar audio ID
+        similarAudioData = Audio.query.filter_by(audio_id=i).first().similar_audio
+        # save ID
+        similarAudioID = []
+        # str covert to dict
+        if similarAudioData is not None:
+            listSimilarAudio = ast.literal_eval(similarAudioData)
+            # save audio all similarAudioID
+            for l in listSimilarAudio:
+                for k in l.keys():
+                    similarAudioID.append(int(k))
+        result["links"] = similarAudioID
+        finalResult.append(result)
+
+    print(finalResult)
+    return json.dumps(finalResult, ensure_ascii=False)

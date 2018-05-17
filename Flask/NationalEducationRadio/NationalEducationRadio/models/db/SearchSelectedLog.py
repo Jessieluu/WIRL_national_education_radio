@@ -14,8 +14,8 @@ class SearchSelectedLog(db.Model):
 
     __tablename__ = "search_selected_logs"
     search_selected_id = db.Column(db.Integer, primary_key=True)
-    search_id = db.Column(db.Integer, db.ForeignKey("search_logs.search_id"))
-    audio = db.Column(db.Integer, db.ForeignKey("audio.audio_id"))
+    search_id = db.Column(db.Integer)
+    audio = db.Column(db.Integer)
 
     def __repr__(self):
         return self.search_selected_id

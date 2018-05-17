@@ -275,7 +275,7 @@ function searchAnalysis(response) {
 
 function execSearch() {
 	var searchContnet = $("#searchKeyword").val();
-	var url = "http://140.124.183.39:8983/solr/EBCStation/select?indent=on&q=" + 
+	var url = "http://nermoocs.org/solr/EBCStation/select?indent=on&q=" + 
 		"content:\"" + searchContnet	+
 		"\" AND summary:[*%20TO%20*]&wt=json&start=0&rows=10&wt=json&json.wrf=searchAnalysis"
 	$.getScript(url);

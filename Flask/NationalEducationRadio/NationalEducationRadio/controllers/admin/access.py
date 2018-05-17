@@ -98,12 +98,19 @@ def channel_update(id):
     form.channel_memo.data = channel.channel_memo
     return render_template('admin/channel_form.html', channel=channel, form=form, behavior="編輯")
 
-@admin.route('/channel/delete/<id>', methods=['GET', 'POST'])
+# *****
+@admin.route('/channel/delete/<id>', methods=['GET','POST'])
 @login_required
 @backstage_required
 def channel_delete(id):
     form = ChannelForm()
     if form.validate_on_submit():
+        del_audio = Audio.query.filter_by(audio_channel=id).all()
+        for d in range(len(del_audio)):
+            del_record = Record.query.filter_by(audio_id=del_audio[d].audio_id).all()
+            for r in range(len(del_record)):
+                db.session.delete(del_record[r])
+            db.session.delete(del_audio[d])
         del_channel = Channel.query.filter_by(channel_id=form.channel_id.data).first()
         db.session.delete(del_channel)
         return redirect(url_for('admin.channel'))
@@ -113,6 +120,7 @@ def channel_delete(id):
     form.channel_category.data = channel.category
     form.channel_memo.data = channel.channel_memo
     return render_template('admin/channel_form.html', channel=channel, form=form, readonly=1, behavior="刪除")
+
 
 
 
@@ -150,7 +158,13 @@ def audio_delete(id):
     form.uncheckFileUpload()
     if form.validate_on_submit():
         del_audio = Audio.query.filter_by(audio_id=form.audio_id.data).first()
-        db.session.delete(del_audio)
+        if Record.query.filter_by(audio_id=form.audio_id.data).all() is not None:
+            del_record = Record.query.filter_by(audio_id=form.audio_id.data).all()
+            for d in range(len(del_record)):
+                db.session.delete(del_record[d])
+        if Audio.query.filter_by(audio_id=form.audio_id.data).first() is not None:
+            del_audio = Audio.query.filter_by(audio_id=form.audio_id.data).first()
+            db.session.delete(del_audio)
         return redirect(url_for('admin.audio', channel_id = del_audio.channel.channel_id))
     audio = Audio.query.filter_by(audio_id=id).first()
     form.audio_id.data = audio.audio_id
@@ -204,32 +218,53 @@ def audio_view(id):
 
     return render_template('admin/audio_view.html', questions=questions)
 
-
+#****
 @admin.route('/audio/keyword_view/<id>', methods=['GET', 'POST'])
 @login_required
 @backstage_required
 def keyword_view(id):
     audio = Audio.query.filter_by(audio_id=id).first()
-    success, keywords, summary = get_solr_data(audio.audio_id)
-
+    success, dontuse, summary = get_solr_data(audio.audio_id)
+    keywords = audio.keyword
+    if keywords is None:
+        keywords = "關鍵字尚未建置"
     form = KeywordForm()
     if form.validate_on_submit():
-        print (123456789)
         solr = pysolr.Solr('http://140.124.183.5:8983/solr/EBCStation', timeout=10)
         if "<eps>" in form.keyword_content.data:
             solrContent = article_filter(form.keyword_content.data)
         else:
             solrContent = form.keyword_content.data
         top10, summary = get_keyword(form.keyword_id.data, solrContent)
-        keywords = ','.join(top10)
-        solr.delete(id=form.keyword_id.data)
+        solr.delete(q='audio_id:'+id)
         solr.add([
         {
-            "id": form.keyword_id.data,
+            "audio_id": form.keyword_id.data,
             "content": solrContent,
-            "keywords": keywords,
             "summary" : summary
         }])
         return redirect(url_for('admin.audio', channel_id = audio.channel.channel_id))
     form.keyword_id.data = audio.audio_id
     return render_template('admin/keyword_view.html', audio=audio, form=form, success=success, keywords=keywords, summary=summary)
+
+
+# need to add
+@admin.route('/audio/caption_view/<id>', methods=['GET', 'POST'])
+@login_required
+@backstage_required
+def caption_view(id):
+    audio = Audio.query.filter_by(audio_id=id).first()
+    form = CaptionForm()
+    caption = ""
+    if form.validate_on_submit():
+        solr = pysolr.Solr('http://127.0.0.1/solr/EBCStationCaption', timeout=10)
+        caption = form.caption_content.data
+        solr.delete(q='audio_id:'+id)
+        solr.add([
+        {
+            "audio_id": form.caption_id.data,
+            "caption": form.caption_content.data,
+        }])
+        return redirect(url_for('admin.audio', channel_id=audio.channel.channel_id))
+    form.caption_id.data = audio.audio_id
+    return render_template('admin/caption_view.html', audio=audio, form=form, caption=caption)

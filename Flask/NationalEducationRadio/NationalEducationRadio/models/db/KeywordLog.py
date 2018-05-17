@@ -15,7 +15,7 @@ class KeywordLog(db.Model):
 
     __tablename__ = "keyword_logs"
     keyword_log_id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.Column(db.Integer)
     keyword = db.Column(db.String(64, collation='utf8_unicode_ci'))
 
     def __repr__(self):

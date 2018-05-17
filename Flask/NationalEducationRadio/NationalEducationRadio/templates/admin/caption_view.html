@@ -1,0 +1,36 @@
+{% extends "layout/admin.html" %}
+{% block title %}節目音檔{{behavior}}{% endblock %}
+{% block cms_title %}節目音檔{{behavior}}{% endblock %}
+{% block box_header %}{% endblock %}
+{% block content %}
+  		{{ form.hidden_tag() }}
+      	{{ audio.name }}
+			<div class="form-group">
+			  <label>字幕</label></br>
+        	  {{ caption }}
+			</div>
+			<div class="form-group">
+			  <label for="keyword_content">編輯字幕</label></br>
+        	  {{ form.caption_content(class="form-control", placeholder="請輸入內容") }}
+			</div>
+			
+  			
+{% endblock %}
+{% block box_footer %}
+{% if (success == True) %}
+	<a href="{{url_for('admin.audio', channel_id = audio.channel.channel_id)}}" class="btn btn-success btn-block">
+		回上一頁
+	</a>
+{% endif %}
+	<button class="btn btn-primary btn-block" type="submit">送出字幕</button>
+{% endblock %}
+
+{% block before_box %}
+<form method="POST" enctype="multipart/form-data">
+{% endblock %}
+{% block after_box %}
+</form>
+{% endblock %}
+{% block after_body %}
+  {{ super() }}
+{% endblock %}

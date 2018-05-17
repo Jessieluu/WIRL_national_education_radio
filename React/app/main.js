@@ -21,6 +21,7 @@ export default class RadioQuestion extends React.Component {
             "title":"",
             "depiction":"",
             "logo":"",
+            keywords: [],
             "duration":""
         };
     }
@@ -89,6 +90,7 @@ export default class RadioQuestion extends React.Component {
                         channel_name={this.state.channel_name}
                         questions={this.state.questions}
                         channel_id={this.state.channel_id}
+                        keywords={this.state.keywords}
                         audio_id={this.state.audio_id} />
                 <div className="keywords">
                     <span></span>

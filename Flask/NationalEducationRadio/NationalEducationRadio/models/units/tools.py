@@ -172,11 +172,16 @@ def parse_question_csv(file):
     return None
 
 def get_solr_data(audio_id):
-    url = "http://140.124.183.5:8983/solr/EBCStation/select?indent=on&q=id:%d&wt=json&start=0&rows=105" % audio_id
+    #url = "http://nermoocs.org/solr/EBCStation/select?indent=on&q=audio_id:%d&wt=json&start=0&rows=9999" % audio_id
+    url = "http://127.0.0.1/solr/EBCStation/select?indent=on&q=audio_id:%d&wt=json&start=0&rows=9999" % audio_id
+    if url is None:
+        return (False, None, None)
+    if requests.get(url) is None:
+        return (False, None, None)
     a = requests.get(url).json()
     if len(a['response']['docs']) == 1:
-        return (True, ' , '.join(a['response']['docs'][0]['keywords'][0].split(",")), 
-            a['response']['docs'][0]['summary'][0])
+        return (True, '', 
+            a['response']['docs'][0]['summary'])
     return (False, None, None)
 
 

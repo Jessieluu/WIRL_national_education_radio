@@ -8,3 +8,6 @@ requests==2.18.4
 pysolr==3.6.0
 hanziconv==0.3.2
 jieba==0.39
+numpy==1.14.2
+scikit-learn=0.19.1
+scipy==1.0.1

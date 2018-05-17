@@ -18,8 +18,9 @@ app.secret_key = 'development'
 
 db = SQLAlchemy(app)
 
-blueprint = {'radio': Blueprint('radio', __name__),
-             'admin': Blueprint('admin', __name__)}
+blueprint = {'root': Blueprint('root', __name__),
+            'radio': Blueprint('radio', __name__),
+            'admin': Blueprint('admin', __name__)}
              
 def get_blueprint(key):
     return blueprint[key]

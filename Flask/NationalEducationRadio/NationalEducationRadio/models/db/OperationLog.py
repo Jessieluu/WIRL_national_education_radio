@@ -17,7 +17,7 @@ class OperationLog(db.Model):
 
     __tablename__ = "operation_logs"
     operation_log_id = db.Column(db.Integer, primary_key=True)
-    play_log = db.Column(db.Integer, db.ForeignKey("play_logs.play_log_id"))
+    play_log = db.Column(db.Integer)
     operation_code = db.Column(db.Integer)
     operation_value = db.Column(db.String(64, collation='utf8_unicode_ci'))
     timestamp = db.Column(db.Text(collation='utf8_unicode_ci'))

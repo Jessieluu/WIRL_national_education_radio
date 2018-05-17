@@ -149,6 +149,10 @@ def opHabit(top_k, user_id, recommendTable):
     # query all data from User db by user_id
     user = User.query.filter_by(id=user_id).first()
 
+    # avoid opRank not exist
+    if user.operation_ranks is None:
+        return recommendTable
+
     # cold start condition, if user operation_ranks len < 5 data then return.
     # data form: A,B,C  len:6
     if len(user.operation_ranks)/2+1 < top_k:
@@ -192,6 +196,11 @@ def similarAudio(top_k, user_id, audio_id, recommendTable):
 
     # query similar_audio from Audio db by user watching audio_id
     audio = Audio.query.filter_by(audio_id=audio_id).first()
+    
+    # avoid opRank not exist
+    if audio.similar_audio is None:
+        return recommendTable
+
     # db storage is json format
     tsimilar_audio = json.loads(audio.similar_audio)
     # cold start condition, if db does not have enough data then return
@@ -242,7 +251,7 @@ def searchSelect(top_k, user_id, recommendTable):
 
     # cold start condition, if db does not have enough search data
     # or search_select_logs then return
-    if len(userSearchLog) == 0 or len(SearchSelectedLog.query.all()) < top_k:
+    if len(userSearchLog) == 0 or len(SearchSelectedLog.query.all()) < top_k or userSearchLog is None:
         print("\nsearchSelect module do nothing!\n")
         return recommendTable
 
@@ -354,6 +363,7 @@ def searchKeywords(top_k, user_id, recommendTable):
     return recommendTable
     # ****** Processing searchkeywords Module done !******
 
+
 # relationkeywords, done
 def relationKeywords(top_k, user_id, recommendTable):
 
@@ -399,8 +409,13 @@ def relationKeywords(top_k, user_id, recommendTable):
     for i in range(queryLen):
         # get highest rank audio id by sorted RankTable
         highestAudioId = list(orderedRankTable.items())[i]
+        # avoid keyword is none
+        if Audio.query.filter_by(audio_id=highestAudioId[0]).first() is None:
+            continue
         # get audio keyword by audio id
         getKeyword = Audio.query.filter_by(audio_id=highestAudioId[0]).first().keyword
+        if getKeyword is None:
+            continue
         # split "," on Db
         splitList = getKeyword.split(",")
         for j in splitList:
@@ -416,21 +431,28 @@ def relationKeywords(top_k, user_id, recommendTable):
 
     # ******** Final audio recommendation by relationkeyword Start ********
     print("****** Start processing relationKeywords audio recommend table! ******\n")
-    # audioDbLen = Audio.query.count()
+    audioDbLen = Audio.query.count()
     # for sorting all audio count rank
     audioRankTable = {}
     # retrieval all watch audio expect top k rank audio
-    for i in range(15, 21):  
-        AudioId = i
- 
+    audio_All = Audio.query.all()
+    for i in range(audioDbLen):
+        AudioId = audio_All[i].audio_id
         # exclude user top k audio
         if AudioId not in topAudioId:
+            # avoid keyword is none
+            if Audio.query.filter_by(audio_id=highestAudioId[0]).first() is None:
+                continue
             # get audio keyword by audio id
             getKeyword = Audio.query.filter_by(audio_id=AudioId).first().keyword
+            # avoid to none keyword
+            if getKeyword is None:
+                continue
             # for calculate audio keyword appear count
             audioCount = 0
             # split "," on Db
             splitList = getKeyword.split(",")
+            
             for j in splitList:
                 # if keyword appear both on relation keyword set and article, then this audio count plus one
                 if j in relationKeywordSet:
@@ -460,12 +482,10 @@ def relationKeywords(top_k, user_id, recommendTable):
     return recommendTable
     # ******** Final audio recommendation by relationkeyword End ********
 
-
 def do_recommend(user_id, audio_id):
     # initial top k audio
     top_k = 5
     recommendTable = {}
-    # (1,1),(3,1),(4,1)
     recommendTable = countUserTimeHotPlay(top_k, user_id, recommendTable)
     recommendTable = timeHotPlay(top_k, user_id, recommendTable)
     recommendTable = hotPlay(top_k, recommendTable)
@@ -483,7 +503,9 @@ def recommend_audios(user_id, audio_id):
     orderedRankTable = do_recommend(user_id, audio_id)
     audios = []
     for audio_id in orderedRankTable:
-        audios.append(Audio.query.filter_by(audio_id=audio_id).first())
+        a = Audio.query.filter_by(audio_id=audio_id).first()
+        if a is not None:
+            audios.append(a)
     return audios
 
 # radioRecSysCoreModule

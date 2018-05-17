@@ -15,11 +15,10 @@ class TimeHotPlay(db.Model):
     __tablename__ = "time_hot_play"
     # audio_id = db.Column(db.Integer, primary_key=True)
     id = db.Column(db.Integer, primary_key=True)
-    audio_id = db.Column(db.Integer, db.ForeignKey("audio.audio_id"))
+    audio_id = db.Column(db.Integer)
     count = db.Column(db.Integer)
     time_zone = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    audio = db.relationship('Audio', backref='audio')
 
 
 def __repr__(self):

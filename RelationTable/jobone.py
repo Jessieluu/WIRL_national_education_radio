@@ -30,7 +30,7 @@ jieba.set_dictionary(_resultDir + 'dict.txt.big')
 jieba.load_userdict(_resultDir + 'stopwords.txt')
 
 # scrawler url setting
-url = "http://140.124.183.5:8983/solr/EBCStation/select?indent=on&q=*:*&rows=150&wt=json"
+url = "http://nermoocs.org/solr/EBCStation/select?indent=on&q=*:*&rows=9999&wt=json"
 request = requests.get(url).json()
 
 

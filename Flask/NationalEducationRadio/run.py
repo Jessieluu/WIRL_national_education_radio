@@ -20,8 +20,9 @@ CsrfProtect(app)
 def context_processor():
     return dict(current_user=current_user, AccessLevel=AccessLevel)
 
-app.register_blueprint(get_blueprint('admin'), url_prefix='/admin')
+app.register_blueprint(get_blueprint('root'), url_prefix='/')
 app.register_blueprint(get_blueprint('radio'), url_prefix='/radio')
+app.register_blueprint(get_blueprint('admin'), url_prefix='/admin')
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

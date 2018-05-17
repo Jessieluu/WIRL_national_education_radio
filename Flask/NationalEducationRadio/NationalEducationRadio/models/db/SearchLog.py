@@ -16,7 +16,7 @@ class SearchLog(db.Model):
 
     __tablename__ = "search_logs"
     search_id = db.Column(db.Integer, primary_key=True)
-    user = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.Column(db.Integer)
     search_text = db.Column(db.String(64, collation='utf8_unicode_ci'))
 
     def __repr__(self):

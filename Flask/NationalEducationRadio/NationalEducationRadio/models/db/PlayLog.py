@@ -16,8 +16,10 @@ class PlayLog(db.Model):
 
     __tablename__ = "play_logs"
     play_log_id = db.Column(db.Integer, primary_key=True)
-    audio = db.Column(db.Integer, db.ForeignKey("audio.audio_id"))
-    user = db.Column(db.Integer, db.ForeignKey("users.id"))
+   # audio = db.Column(db.Integer, db.ForeignKey("audio.audio_id"))
+   # user = db.Column(db.Integer, db.ForeignKey("users.id"))
+    audio = db.Column(db.Integer)
+    user = db.Column(db.Integer)
     star_time = db.Column(db.Text(collation='utf8_unicode_ci'))
     end_time = db.Column(db.Text(collation='utf8_unicode_ci'))
 

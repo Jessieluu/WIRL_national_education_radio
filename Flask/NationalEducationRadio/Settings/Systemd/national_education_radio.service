@@ -1,0 +1,16 @@
+[Unit]
+Description=uWSGI National Education Radio
+After=network.target
+
+[Service]
+ExecStart=uwsgi --ini uwsgi.ini
+WorkingDirectory=/var/www/EBCStation/Flask/NationalEducationRadio
+RuntimeDirectory=uwsgi
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
