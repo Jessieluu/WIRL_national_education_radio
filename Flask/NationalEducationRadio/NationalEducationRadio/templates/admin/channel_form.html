@@ -5,18 +5,24 @@
 {% block content %}
       		{{ form.hidden_tag() }}
 			<div class="form-group">
-			  <label for="channel_name">廣播節目名稱</label>
+				<label for="channel_name">廣播節目名稱</label><br>
+				<select placeholder="帶入節目名稱" class="form-control" id="showChannel" name="showChannel" data-style="btn-primary" onchange="showInfo()">
+				<!-- <option value="" disabled selected value>帶入節目名稱</option> -->
+				</select>
+				<button id="copy1" class="btn btn-primary">帶入</button> 
         	  {{ form.channel_name(class="form-control", placeholder="輸入欲新增之節目名稱") }}
 			</div>
 
 			<div class="form-group">
 			  <label for="NameofTelevise">廣播節目類別</label></br>
-        	  {{ form.channel_category(class="form-control", placeholder="") }}
+			  {{ form.channel_category(class="form-control", placeholder="") }}
 			</div>
-			
+
 			<div class="form-group">
 			  <label for="channel_memo">廣播節目敘述</label>
-        	  {{ form.channel_memo(class="form-control", placeholder="輸入欲新增之節目名稱") }}
+			  <textarea class="form-control rich" id="showChannelMemo" contenteditable="true" placeholder='電台官網描述'></textarea>
+			  <button id="copy3" class="btn btn-primary">帶入</button>  
+			  {{ form.channel_memo(class="form-control", placeholder="輸入欲新增之節目敘述") }}
         	  {{ form.channel_id() }}
 			</div>
 {% endblock %}
@@ -31,13 +37,17 @@
 </form>
 {% endblock %}
 {% block after_body %}
+	<script type="text/javascript" src="{{url_for('static', filename='js/channelapi.js')}}?{{ range(1, 9999999999999) | random }}"></script>
+
   {{ super() }}
   {% if readonly %}
 <script>
   $(function () {
   	readonly =
   	$("input, textarea, select").attr("readonly", true)
-  });
+	});
 </script>
+
+
  {% endif %}
 {% endblock %}

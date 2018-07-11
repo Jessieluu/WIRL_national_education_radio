@@ -6,7 +6,7 @@ import random
 import json
 from io import StringIO
 from datetime import datetime, timedelta
-from flask import Flask, redirect, url_for, render_template, session, flash, request, jsonify
+from flask import Flask, redirect, url_for, render_template, session, flash, request, jsonify, Response
 from flask.ext.login import current_user, login_required, logout_user, login_user
 from sqlalchemy import desc
 from sqlalchemy import exists
@@ -45,13 +45,18 @@ from collections import Set
 
 from flask_login import UserMixin, LoginManager, login_required, current_user, login_user, logout_user
 
-
 root = get_blueprint('root')
 radio = get_blueprint('radio')
 
 @root.route('/', methods=['GET', ])
 def root_index():
     return redirect(url_for('radio.index'))
+
+# @radio.route('/test', methods=['GET', ])
+# def knowledge_index():
+#     print("test")
+#     return render_template('radio/knowledge.html')
+
 
 @radio.route('/', methods=['GET', ])
 @login_required
@@ -79,6 +84,7 @@ def showJson(channel_id, audio_id):
     channel = Channel.query.filter_by(channel_id=channel_id).first()
     audios = Audio.query.filter_by(channel=channel).all()
     audio = Audio.query.filter_by(audio_id=audio_id).first()
+    summary = get_solr_data(audio.audio_id)
     if audio is None or channel is None or audio.channel != channel:
         return "Nothing"
 
@@ -113,6 +119,7 @@ def showJson(channel_id, audio_id):
     json_content['forward'] = url_for('radio.show', channel_id=channel_id, audio_id=nxt) if nxt is not None else "#"
     json_content['backward'] = url_for('radio.show', channel_id=channel_id, audio_id=pre) if pre is not None else "#"
     json_content['questions'] = json.loads(audio.audio_question)
+    json_content['audio_summary'] = summary
     
     keyword = []
     if audio.keyword is not None:
@@ -445,16 +452,16 @@ def API_GOOGLE_login():
     
     return '11'
 
-
-
 # need to change keyword search
 @radio.route('/knowledge', methods=['GET', ])
 def knowledge():
     finalResult = []
     # get search keyword
-    #keyword = str(request.args.get('keyword'))
-    keyword = "廣播"
+    keyword = str(request.args.get('search'))
+    #keyword = "廣播"
     # scrawler setting
+    # url = "http://140.124.183.5:8983/solr/EBCStation/select?indent=on&q=*:*&rows=999&wt=json"
+    # url = "http://nermoocs.org/solr/EBCStation/select?indent=on&q=*:*&rows=999&wt=json"
     url = "http://127.0.0.1/solr/EBCStation/select?indent=on&q=*:*&rows=999&wt=json"
     article = requests.get(url).json()
     # db length
@@ -483,7 +490,7 @@ def knowledge():
                 if k is not '':
                     keywordList.append(k)
         # save json format parameters
-        result["keyword"] = keywordList
+        result["keyWord"] = keywordList
         result["type"] = audioInfo.audio_channel
         result["title"] = audioInfo.audio_name
         result["text"] = ""
@@ -502,4 +509,37 @@ def knowledge():
         finalResult.append(result)
 
     print(finalResult)
-    return json.dumps(finalResult, ensure_ascii=False)
+
+    resp = Response(response=json.dumps(finalResult, ensure_ascii=False),
+                    status=200,
+                    mimetype="application/json")
+
+    return resp
+
+
+# caption get
+@radio.route('/captionGet', methods=['POST', ])
+def captionGet():
+    # scrawler setting
+    url = "http://127.0.0.1/solr/EBCStationCaption/select?indent=on&q=*:*&rows=9999&wt=json"
+    # url = "http://nermoocs.org/solr/EBCStationCaption/select?indent=on&q=*:*&rows=9999&wt=json"
+    caption = requests.get(url).json()
+    # db length
+    captionLen = caption['response']['numFound']
+    audio_id = request.json['audio_id']
+    print(audio_id)
+    for l in range(captionLen):
+        captionList = []
+        if caption['response']['docs'][l]['audio_id'] == audio_id:
+            for i in caption['response']['docs'][l]['caption'].split("\n"):
+                content = i.split(",")
+                if len(content) < 2:
+                    continue
+                captionList.append({
+                'start_time': content[0],
+                'end_time': content[1],
+                'caption': content[2]
+                })
+            break
+    print(captionList)
+    return json.dumps(captionList, ensure_ascii=False)

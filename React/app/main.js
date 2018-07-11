@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import QuestionTable from './question-form';
 import RadioUI from './radio-ui';
+import Caption from './caption'
 import Sound from 'react-sound';
 
 export default class RadioQuestion extends React.Component {
@@ -22,7 +23,8 @@ export default class RadioQuestion extends React.Component {
             "depiction":"",
             "logo":"",
             keywords: [],
-            "duration":""
+            "duration":"",
+            audio_summary:""
         };
     }
 
@@ -42,7 +44,8 @@ export default class RadioQuestion extends React.Component {
                 title: result.title,
                 depiction: result.depiction,
                 keywords: result.keywords,
-                logo: result.logo
+                logo: result.logo,
+                audio_summary: result.audio_summary
             });
         }.bind(this));
     }
@@ -58,6 +61,10 @@ export default class RadioQuestion extends React.Component {
                     <div className="program-info">
                         <div className="program-title">{this.state.audio_name}</div>
                         <div className="program-album">{this.state.channel_name}</div>
+                        <Caption 
+                            current={this.state.current}
+                            duration={this.state.duration}
+                            audio_id={this.state.audio_id}/>
                     </div>
                     <div className="controller">
                         <RadioUI
@@ -91,10 +98,16 @@ export default class RadioQuestion extends React.Component {
                         questions={this.state.questions}
                         channel_id={this.state.channel_id}
                         keywords={this.state.keywords}
-                        audio_id={this.state.audio_id} />
-                <div className="keywords">
-                    <span></span>
-                </div>
+                        audio_id={this.state.audio_id}
+                        audio_summary={this.state.audio_summary} 
+                        />
+
+                <div className="clearfix hidden-xs"></div>
+				
+				<div className="player_feet_group">
+					<div className="player-feet"></div>
+					<div className="player-feet2"></div>
+				</div>
             </div>
         );
     }

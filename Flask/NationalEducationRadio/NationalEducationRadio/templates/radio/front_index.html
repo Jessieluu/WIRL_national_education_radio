@@ -17,17 +17,16 @@ home-page
     <div class="frame">
       <div class="player" id="main">
       </div>
-      <div class="player-feet"></div>
-      <div class="player-feet2"></div>
-
-      <div class="tag">
-        <a href="javascript:;" onclick="show_recommand()" class="tag_word">音檔</a>
-      </div>
-      <div class="tag2">
-        <a href="javascript:;" onclick="show_recommand()" class="tag_word">推薦</a>
-      </div>
 
       <div class="series" id="channel_list" style="display: block;">
+        <div class="btn-group btn-group-justified" role="group">
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-default" onclick="show_recommand('audit')">音檔</button>
+          </div>
+          <div class="btn-group" role="group">
+						<button type="button" class="btn btn-default" onclick="show_recommand('recommand')">推薦</button>
+					</div>
+				</div>
         <div class="series-info">
           <div class="series-info-pic"></div><!--此系列縮圖 替換bg圖片-->
           <div class="series-info-text">
@@ -69,6 +68,14 @@ home-page
       </div>
 
       <div class="series" id="recommend_box" style="display: none;">
+        <div class="btn-group btn-group-justified" role="group">
+          <div class="btn-group" role="group">
+						<button type="button" class="btn btn-default" onclick="show_recommand('audit')">音檔</button>
+          </div>
+          <div class="btn-group" role="group">
+						<button type="button" class="btn btn-default" onclick="show_recommand('recommand')">推薦</button>
+					</div>
+				</div>
         <div class="series-info">
           <div class="series-info-pic"></div><!--此系列縮圖 替換bg圖片-->
           <div class="series-info-text">
@@ -110,21 +117,6 @@ home-page
     </div>
   </section>
 
-  <section class="section2">
-    <div class="frame">
-      <img src="{{url_for('static', filename='images/mibo.png')}}" class="mibo" alt="麥寶圖片">
-      <div class="interactive">
-        <div class="text">只聽廣播不過癮嗎？快來挑戰看看互動答題吧！</div>
-        <div class="interactive-control">
-          <span class="interactive-button-text">互動答題模式</span>
-          <span class="interactive-button">
-            <input id="switch" class="switch" type="checkbox" value="{{audios[0].audio_id}}"/>
-            <label class="switch-label" for="switch">Label Text</label>
-          </span>
-        </div>
-      </div>
-    </div>
-  </section>
   {% endblock %}
 
 {% block after_body %}

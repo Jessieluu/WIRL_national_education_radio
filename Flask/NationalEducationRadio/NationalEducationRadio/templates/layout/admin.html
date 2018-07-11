@@ -7,7 +7,27 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/dataTables.bootstrap.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/AdminLTE.min.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/skins/skin-green.min.css')}}">
-{% endblock %}
+
+    <style>
+        #showChannalMemo {
+          height:auto !important;
+        }
+        .rich {
+          color: gray;
+        }
+        .rich:empty:before{
+            content: attr(placeholder);   /* element attribute*/
+            /*content: 'this is content';*/
+        }
+        .rich:focus:before{
+            content:none;
+        }
+        </style>
+   
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='js/style.js')}}?{{ range(1, 9999999999999) | random }}"></script>
+
+    {% endblock %}
 {% block body_class %}hold-transition skin-green sidebar-mini{% endblock %}
 {% block body %}
 <div class="wrapper">

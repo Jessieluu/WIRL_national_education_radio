@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Radio</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/radio.css')}}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/radioStyle.css')}}">
+
+  <script type="text/javascript" src="{{url_for('static', filename='js/config.js')}}"></script>
+
+  <script type="text/javascript" src="{{url_for('static', filename='js/jquery-2.0.3.min.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/prefixfree.min.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/jquery.parse.min.js')}}"></script>
+
+  <script type="text/javascript" src="{{url_for('static', filename='js/mn.js')}}"></script>
+
+  <script type="text/javascript">
+    var mn;
+    function init() {
+      mn = new MonadicNomad();  
+      mn.load();
+    }
+  </script>
+</head>
+<body onload="init()">
+  <nav id="info">
+  <h1></h1>
+  <ul></ul>
+  </nav>
+
+  <div class="overlay" id="hint">
+    <input type="search" results name="search" value="" id="search" placeholder='search'>   
+  </div>  
+  <div id="keyword-links">
+    <ul>
+      
+    </ul>
+  </div>
+  <div id="canvas"></div>
+  
+</body>
+</html>

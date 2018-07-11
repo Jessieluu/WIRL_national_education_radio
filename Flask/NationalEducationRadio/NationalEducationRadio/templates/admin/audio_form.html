@@ -1,20 +1,22 @@
 {% extends "layout/admin.html" %}
-{% block title %}節目音檔{{behavior}}{% endblock %}
-{% block cms_title %}節目音檔{{behavior}}{% endblock %}
+{% block title %}節目單集{{behavior}}{% endblock %}
+{% block cms_title %}節目單集{{behavior}}{% endblock %}
 {% block box_header %}{% endblock %}
 {% block content %}
       		{{ form.hidden_tag() }}
 			<div class="form-group">
-			  <label for="audio_name">音檔名稱</label>
-        	  {{ form.audio_name(class="form-control", placeholder="輸入欲新增之音檔名稱") }}
+				<label for="audio_name">單集名稱</label>
+				<select class="form-control" id="showAudit" name="showAudit" data-style="btn-primary">
+				</select>
+				<button id="copy4" class="btn btn-primary">帶入</button> 
+        	  {{ form.audio_name(class="form-control", placeholder="輸入欲新增之單集名稱") }}
 			</div>
 
 			<div class="form-group">
 			  <label for="NameofTelevise">廣播節目</label></br>
-			  <input type="text" readonly="readonly" class="form-control" value="{{channel.channel_name}}">
+			  <input type="text" id="channelName" readonly="readonly" class="form-control" value="{{channel.channel_name}}">
         	  {{ form.audio_channel() }}
 			</div>
-			
   			
 			<div class="form-group">
 			  <label for="audio_file">上傳音檔</label>
@@ -39,6 +41,8 @@
 </form>
 {% endblock %}
 {% block after_body %}
+	<script type="text/javascript" src="{{url_for('static', filename='js/auditapi.js')}}?{{ range(1, 9999999999999) | random }}"></script>
+
   {{ super() }}
   {% if readonly %}
 <script>

@@ -235,10 +235,40 @@ export default class QuestionTable extends React.Component {
 
         return (
             <div className="question_table">
-				<div className="intro-title">節目摘要</div>
+                <div className="row">
+                    <div className="clearfix hidden-xs"></div>
+                    <div className="col-xs-6">
+                        <div className="intro-title">節目摘要</div>
+                    </div>
+                    <div className="col-xs-6">
+                        <div className="interactive">
+                            <div className="interactive-control">
+                                <span className="interactive-button-text">互動答題</span>
+                                <span className="interactive-button">
+                                    <input id="switch" className="switch" type="checkbox" />
+                                    <label className="switch-label" htmlFor="switch"></label>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="intro-content">
                     {this.props.depiction}
                 </div>
+                
+                <div className="panel-group" id="accordion">
+                    <div className="panel-heading accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
+                        <div className="panel-title intro-title">    
+                            音檔摘要
+                        </div>
+                    </div>
+                    <div id="collapseOne" className="panel-collapse collapse">
+                        <div className="panel-body intro-content">
+                            {this.props.audio_summary}
+                        </div>
+                    </div>
+                </div>
+
                 {this.keywords()} 
                 {this.question()} 
             </div>            

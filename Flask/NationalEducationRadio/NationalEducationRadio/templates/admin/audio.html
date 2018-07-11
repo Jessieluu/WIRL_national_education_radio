@@ -7,8 +7,12 @@
 	<table id="example1" class="table table-bordered table-striped">
 		<thead>
 			<tr>
-				<th width="80%">音檔名稱</th>
-				<th>匯入逐字稿 / 檢視 / 編輯 / 刪除</th>
+				<th width="70%">音檔名稱</th>
+				<th width="8%">匯入逐字稿</th>
+				<th width="7%">匯入字幕</th>
+				<th width="5%">檢視</th>
+				<th width="5%">編輯</th>
+				<th width="5%">刪除</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -16,31 +20,41 @@
 			<tr>
 				<td>{{audio.audio_name}}</td>
 				<td>
-
-				<a href="{{url_for('admin.keyword_view', id=audio.audio_id)}}" class="btn btn-success">
-					<span class="glyphicon glyphicon-thumbs-up"></span>
-				</a>
-
-				<a href="{{url_for('admin.audio_view', id=audio.audio_id)}}" class="btn btn-primary">
-					<span class="glyphicon glyphicon-file"></span>
-				</a>
-
-				<a href="{{url_for('admin.audio_edit', id=audio.audio_id)}}" class="btn btn-info">
-					<span class="glyphicon glyphicon-pencil"></span>
-				</a> 
-
-				<a href="{{url_for('admin.audio_delete', id=audio.audio_id)}}" class="btn btn-danger">
-					<span class="glyphicon glyphicon-trash"></span>
-				</a>
-
+					<a href="{{url_for('admin.keyword_view', id=audio.audio_id)}}" class="btn btn-success">
+						<span class="glyphicon glyphicon-list-alt"></span>
+					</a>
+				</td>
+				<td>
+					<a href="{{url_for('admin.caption_view', id=audio.audio_id)}}" class="btn btn-success">
+						<span class="glyphicon glyphicon-font"></span>
+					</a>
+				</td>
+				<td>
+					<a href="{{url_for('admin.audio_view', id=audio.audio_id)}}" class="btn btn-primary">
+						<span class="glyphicon glyphicon-file"></span>
+					</a>
+				</td>
+				<td>
+					<a href="{{url_for('admin.audio_edit', id=audio.audio_id)}}" class="btn btn-info">
+						<span class="glyphicon glyphicon-pencil"></span>
+					</a> 
+				</td>
+				<td>
+					<a href="{{url_for('admin.audio_delete', id=audio.audio_id)}}" class="btn btn-danger">
+						<span class="glyphicon glyphicon-trash"></span>
+					</a>
 				</td>
 			</tr>
 			{% endfor %}
 		</tbody>
 		<tfoot>
 			<tr>
-				<th>音檔名稱</th>
-				<th>檢視 / 編輯 / 刪除</th>
+				<th width="70%">音檔名稱</th>
+				<th width="8%">匯入逐字稿</th>
+				<th width="7%">匯入字幕</th>
+				<th width="5%">檢視</th>
+				<th width="5%">編輯</th>
+				<th width="5%">刪除</th>
 			</tr>
 		</tfoot>
 	</table>

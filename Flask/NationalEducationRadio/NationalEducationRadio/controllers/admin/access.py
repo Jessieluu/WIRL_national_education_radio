@@ -17,10 +17,10 @@ from NationalEducationRadio.models.form.ChannelForm import ChannelForm
 from NationalEducationRadio.models.form.LoginForm import LoginForm
 from NationalEducationRadio.models.form.AudioForm import AudioForm
 from NationalEducationRadio.models.form.KeywordForm import KeywordForm
+from NationalEducationRadio.models.form.CaptionForm import CaptionForm
 from NationalEducationRadio.models.units.tools import password_encryption, required_to_flash, audio_upload, parse_question_csv, get_solr_data, article_filter
 from NationalEducationRadio.models.units.login import backstage_required
 from NationalEducationRadio.models.units.keywords import get_keyword
-
 
 admin = get_blueprint('admin')
 
@@ -230,7 +230,7 @@ def keyword_view(id):
         keywords = "關鍵字尚未建置"
     form = KeywordForm()
     if form.validate_on_submit():
-        solr = pysolr.Solr('http://140.124.183.5:8983/solr/EBCStation', timeout=10)
+        solr = pysolr.Solr('http://127.0.0.1/solr/EBCStation', timeout=10)
         if "<eps>" in form.keyword_content.data:
             solrContent = article_filter(form.keyword_content.data)
         else:

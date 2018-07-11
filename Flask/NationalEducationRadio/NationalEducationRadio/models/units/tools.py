@@ -172,7 +172,7 @@ def parse_question_csv(file):
     return None
 
 def get_solr_data(audio_id):
-    #url = "http://nermoocs.org/solr/EBCStation/select?indent=on&q=audio_id:%d&wt=json&start=0&rows=9999" % audio_id
+    # url = "http://nermoocs.org/solr/EBCStation/select?indent=on&q=audio_id:%d&wt=json&start=0&rows=9999" % audio_id
     url = "http://127.0.0.1/solr/EBCStation/select?indent=on&q=audio_id:%d&wt=json&start=0&rows=9999" % audio_id
     if url is None:
         return (False, None, None)

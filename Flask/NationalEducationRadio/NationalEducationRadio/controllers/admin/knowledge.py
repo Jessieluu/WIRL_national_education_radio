@@ -20,6 +20,7 @@ def knowldge():
     keyword = str(request.args.get('keyword'))
     # scrawler setting
     url = "http://127.0.0.1/solr/EBCStation/select?indent=on&q=*:*&rows=9999&wt=json"
+    # url = "http://nermoocs.org/solr/EBCStation/select?indent=on&q=*:*&rows=9999&wt=json"
     article = requests.get(url).json()
     # db length
     articleLen = article['response']['numFound']

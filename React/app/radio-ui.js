@@ -24,6 +24,7 @@ export default class RadioUI extends React.Component {
             volume: 50,
             play_log_id: -1,
             seekBarLock: false,
+            playPauseLock: false,
             interactiveMode: true,
             load_playlog: false,
             button_type: "",
@@ -50,7 +51,17 @@ export default class RadioUI extends React.Component {
                 this.props.set_operation_code(op_code.PLAY_PAUSE);
                 this.setState({first_play: false});  
                 this.props.set_operation_value("pause");                              
-            }            
+            }
+
+            this.setState({playPauseLock: true});
+
+            var t = this;
+            // 鎖住play pause
+            setTimeout(function (){
+                t.setState({playPauseLock: false});
+            }, 1000);
+
+            
             setTimeout(()=>this.send_operationLog_to_server(),100);                         
         };
 
@@ -178,7 +189,7 @@ export default class RadioUI extends React.Component {
             // 所以如果使用者點擊了時間條，就先讓Update不要動作。
             setTimeout(function (){
                 t.setState({seekBarLock: false});
-            }, 100);
+            }, 500);
         };
         var style = {
             height: "10px", 
@@ -348,12 +359,12 @@ export default class RadioUI extends React.Component {
                 {this.seek_bar()}
                 {this.control_row()}                
               <Sound url={this.props.src}
+                     autoLoad={true}
                      playStatus={this.props.play_status}
                      playFromPosition={this.state.position}
                      volume={this.state.volume}
                      onPlaying={({position, duration}) => this.update(position, duration)}
-              />
-                {/*{this.interactive_mode_switch()}*/}
+                     />
             </div>
         );
     }

@@ -1,3 +1,4 @@
+
 var op_code = {
     "PLAY_PAUSE" : 0x01,
     "GO_NEXT_AUDIO" : 0x02,
@@ -144,10 +145,18 @@ function add_op_log(play_log, operation_code, operation_value){
     });
 }
 
+var is_show_audit = true;
 var is_show_recommend = false;
-function show_recommand(){
-    is_show_recommend = !is_show_recommend;
 
+function show_recommand(id){
+    if(id === 'recommand'){
+        is_show_recommend = true;
+        is_show_audit = !is_show_recommend;
+    }
+    else{
+        is_show_recommend = false;
+        is_show_audit = !is_show_recommend;
+    }
     if(is_show_recommend){
         document.getElementById('recommend_box').style.display='block';
         document.getElementById('channel_list').style.display='none';
@@ -158,4 +167,5 @@ function show_recommand(){
     }
        
 }
+
 
